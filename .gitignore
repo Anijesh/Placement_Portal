@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+instance/
+*.sqlite3
+
+# Virtual env
+venv/
+env/
+
+# Node
+node_modules/
+dist/
+
+# Redis dump
+dump.rdb
+
+# OS
+.DS_Store
