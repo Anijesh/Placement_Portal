@@ -8,5 +8,6 @@ class Company(db.models):
     industry= db.Column(db.String(100))
     website = db.Column(db.String(255))
     approval_status = db.Column(db.String(20), default="Pending")
+    location = db.Column(db.String(50),nullable='False')
 
     user = db.relationship("User", backref=db.backref("company", uselist=False))
