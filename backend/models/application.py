@@ -9,3 +9,7 @@ class application(db.Models):
     applied_at = db.Column(db.DateTime,default = datetime.utcnow)
     
     student = db.relationship("Student", backref="applications")
+    __table_args__ = (
+        db.UniqueConstraint("student_id", "job_id", name="unique_student_job"),
+    )
+    job = db.relationship("Job", backref="applications")
