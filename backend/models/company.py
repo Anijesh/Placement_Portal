@@ -1,9 +1,9 @@
 from extensions import db
 
-class Company(db.models):
+class Company(db.Model):
     __tablename__='companies'
     id = db.Column(db.Integer,primary_key='True')
-    user_id = db.Column(db.Integer,db.ForiegnKey('users.id'),nullable ="False")
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable ="False")
     name = db.Column(db.String(200),nullable = "False")
     industry= db.Column(db.String(100))
     website = db.Column(db.String(255))
