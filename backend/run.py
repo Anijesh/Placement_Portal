@@ -1,6 +1,6 @@
 from app import create_app
 from extensions import db
-from models import User
+from models import User,Branch
 
 app = create_app()
 
@@ -21,10 +21,21 @@ def create_admin():
     else:
         print("Admin already exists")
 
+def create_branch():
+    default_branches = ['CSE','ECE','EEE','MECH','CIVIL',]
+    for branch_name in default_branches:
+        existing_branch = Branch.query.filter_by(name=branch_name).first()
+        if not existing_branch:
+            branch=Branch(name=branch_name)
+            db.session.add(branch)
+    db.session.commit()
+    print("Default branch created")
+
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         create_admin()
+        create_branch()
 
     app.run(debug=True)
