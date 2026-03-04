@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from flask_jwt_extended import create_access_token
-from models import User
+from models import User, Student, Company
 from extensions import db
 
 class RegisterResource(Resource):
@@ -17,6 +17,28 @@ class RegisterResource(Resource):
         user=User(email=data['email'],role=role)
         user.set_password(data['password'])
         db.session.add(user)
+        db.session.flush() 
+
+        if role == 'student':
+            student = Student(
+                name=data.get('name'),
+                user_id=user.id,
+                branch_id=data.get('branch_id'),
+                cgpa=data.get('cgpa'),
+                graduation_year=data.get('graduation_year'),
+                skills=data.get('skills')
+            )
+            db.session.add(student)
+        elif role == 'company':
+            company = Company(
+                user_id=user.id,
+                name=data.get('name'),
+                industry=data.get('industry', ''),
+                website=data.get('website', ''),
+                location=data.get('location')
+            )
+            db.session.add(company)
+
         db.session.commit()
         return {'message':"registration successfully"}
     

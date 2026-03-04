@@ -38,4 +38,4 @@ if __name__ == "__main__":
         create_admin()
         create_branch()
 
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
