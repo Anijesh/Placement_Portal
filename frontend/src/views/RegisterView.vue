@@ -25,7 +25,6 @@
           </select>
         </div>
 
-        <!-- Student Fields -->
         <div v-if="form.role === 'student'" class="dynamic-fields slide-down">
           <div class="input-group">
             <label>Name</label>
@@ -59,7 +58,6 @@
           </div>
         </div>
 
-        <!-- Company Fields -->
         <div v-if="form.role === 'company'" class="dynamic-fields slide-down">
           <div class="input-group">
             <label>Company Name</label>

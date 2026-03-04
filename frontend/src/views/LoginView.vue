@@ -67,6 +67,7 @@ export default {
         
         const data = response.data;
         localStorage.setItem("token", data.access_token);
+        localStorage.setItem("role", data.role);
         
         if (data.role === "admin") {
           this.$router.push("/admin");
@@ -86,7 +87,8 @@ export default {
 </script>
 
 <style scoped>
-/* Base Layout */
+
+
 .login-page {
   min-height: 100vh;
   width: 100vw;
@@ -100,7 +102,7 @@ export default {
   margin: 0;
 }
 
-/* Basic Container */
+
 .login-container {
   background: #ffffff;
   border-radius: 12px;
@@ -111,7 +113,7 @@ export default {
   color: #333;
 }
 
-/* Brand Section */
+
 .brand-section {
   text-align: center;
   margin-bottom: 2rem;
@@ -130,7 +132,7 @@ export default {
   margin: 0;
 }
 
-/* Form Styles */
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -202,7 +204,7 @@ input:focus {
   cursor: not-allowed;
 }
 
-/* Register Link */
+
 .register-link {
   text-align: center;
   margin-top: 1.5rem;
@@ -221,7 +223,7 @@ input:focus {
   text-decoration: underline;
 }
 
-/* Animations */
+
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
@@ -244,7 +246,7 @@ input:focus {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+
 @media (max-width: 480px) {
   .login-container {
     padding: 1.5rem;

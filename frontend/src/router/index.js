@@ -21,4 +21,29 @@ const router = createRouter({
   ],
 })
 
+router.beforeEach((to, from, next) => {
+
+  const token = localStorage.getItem("token")
+  const role = localStorage.getItem("role")
+
+  if (!token && to.path !== "/" && to.path !== "/register") {
+    return next("/")
+  }
+
+  if (to.path === "/admin" && role !== "admin") {
+    return next("/")
+  }
+
+  if (to.path === "/company" && role !== "company") {
+    return next("/")
+  }
+
+  if (to.path === "/student" && role !== "student") {
+    return next("/")
+  }
+
+  next()
+
+})
+
 export default router
