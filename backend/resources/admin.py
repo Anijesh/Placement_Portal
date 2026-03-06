@@ -67,3 +67,23 @@ class AdminCompanyRejectResource(Resource):
         company.approval_status = "rejected"
         db.session.commit()
         return {"message": "Company rejected"}, 200
+    
+class AdminStudentListResource(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get("role") != "admin":
+            return {"message": "Admin access required"}, 403
+        students = Student.query.all()
+        result =[]
+        for student in students:
+            result.append({
+                "id":student.id,
+                'name': student.name,
+                'branch':student.branch.name,
+                'email':student.user.email,
+                'cgpa':student.cgpa,
+                'graduation_year':student.graduation_year,
+                'skills':student.skills
+            })
+        return result, 200
