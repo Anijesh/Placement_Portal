@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt
-from models import Student, Company, Job
+from models import Student, Company, Job,User
 from extensions import db
 
 class AdminStatsResource(Resource):
@@ -87,3 +87,18 @@ class AdminStudentListResource(Resource):
                 'skills':student.skills
             })
         return result, 200
+
+class AdminDeactivateStudent(Resource):
+    @jwt_required()
+    def get(self,id):
+        claims =get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message": "Admin access required"}, 403
+        student = Student.query.get(id)
+        if not student:
+            return {"message": "Student not found"}, 404
+        user = User.query.get(student.user_id)
+        user.is_active = False
+        db.session.commit()
+        return {"message": "Student deactivated"}
+
