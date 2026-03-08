@@ -90,7 +90,7 @@ class AdminStudentListResource(Resource):
 
 class AdminDeactivateStudent(Resource):
     @jwt_required()
-    def get(self,id):
+    def put(self,id):
         claims =get_jwt()
         if claims.get('role') != 'admin':
             return {"message": "Admin access required"}, 403
@@ -104,7 +104,7 @@ class AdminDeactivateStudent(Resource):
     
 class AdminDeactivateCompany(Resource):
     @jwt_required()
-    def get(self,id):
+    def put(self,id):
         claims = get_jwt()
         if claims.get('role') !='admin':
             return {"message":"Admin access required"},403
@@ -115,3 +115,17 @@ class AdminDeactivateCompany(Resource):
         user.is_active = False
         db.session.commit()
         return{"message":"Company deactivated"}
+    
+class AdminActivateStudent(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims =get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message": "Admin access required"}, 403
+        student = Student.query.get(id)
+        if not student:
+            return {"message": "Student not found"}, 404
+        user = User.query.get(student.user_id)
+        user.is_active =True
+        db.session.commit()
+        return {"message": "Student activated"}

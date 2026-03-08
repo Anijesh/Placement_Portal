@@ -7,7 +7,8 @@ from resources.admin import (
     AdminCompanyRejectResource,
     AdminStudentListResource,
     AdminDeactivateStudent,
-    AdminDeactivateCompany
+    AdminDeactivateCompany,
+    AdminActivateStudent
 )
 
 admin_bp = Blueprint("admin_bp", __name__)
@@ -20,3 +21,4 @@ api.add_resource(AdminCompanyRejectResource, "/companies/<int:id>/reject")
 api.add_resource(AdminStudentListResource,'/students')
 api.add_resource(AdminDeactivateStudent,'/students/<int:id>/deactivate')
 api.add_resource(AdminDeactivateCompany,'/companies/<int:id>/deactivate')
+api.add_resource(AdminActivateStudent,'/students/<int:id>/activate')
