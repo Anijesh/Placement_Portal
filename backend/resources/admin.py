@@ -101,4 +101,17 @@ class AdminDeactivateStudent(Resource):
         user.is_active = False
         db.session.commit()
         return {"message": "Student deactivated"}
-
+    
+class AdminDeactivateCompany(Resource):
+    @jwt_required()
+    def get(self,id):
+        claims = get_jwt()
+        if claims.get('role') !='admin':
+            return {"message":"Admin access required"},403
+        company = Company.query.get(id)
+        if not company:
+            return {'message':"Company not found"},404
+        user=User.query.get(company.user.id)
+        user.is_active = False
+        db.session.commit()
+        return{"message":"Company deactivated"}
