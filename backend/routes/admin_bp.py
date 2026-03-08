@@ -9,7 +9,8 @@ from resources.admin import (
     AdminDeactivateStudent,
     AdminDeactivateCompany,
     AdminActivateStudent,
-    AdminActivateCompany
+    AdminActivateCompany,
+    AdminSearchStudents,
 )
 
 admin_bp = Blueprint("admin_bp", __name__)
@@ -24,3 +25,4 @@ api.add_resource(AdminDeactivateStudent,'/students/<int:id>/deactivate')
 api.add_resource(AdminDeactivateCompany,'/companies/<int:id>/deactivate')
 api.add_resource(AdminActivateStudent,'/students/<int:id>/activate')
 api.add_resource(AdminActivateCompany,'/companies/<int:id>/activate')
+api.add_resource(AdminSearchStudents,'/students/search')

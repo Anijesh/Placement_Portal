@@ -1,3 +1,4 @@
+from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt
 from models import Student, Company, Job,User
@@ -143,3 +144,30 @@ class AdminActivateCompany(Resource):
         user.is_active = True
         db.session.commit()
         return{"message":"Company activated"}
+    
+
+class AdminSearchStudents(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') !='admin':
+            return {"message":"Admin access required"},403      
+        query= request.args.get('q')
+        students=Student.query.join(User).filter(
+            (Student.name.ilike(f"%{query}%")) |
+            (Student.skills.ilike(f"%{query}%")) |
+            (User.email.ilike(f"%{query}%"))
+        ).all()
+        result=[]
+        for s in students:
+            result.append({
+                "id": s.id,
+                "name": s.name,
+                "email": s.user.email,
+                "branch": s.branch.name,
+                "cgpa": s.cgpa,
+                "graduation_year":s.graduation_year,
+                "skills":s.skills,
+                "is_active": s.user.is_active
+            })
+        return result, 200
