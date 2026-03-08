@@ -171,3 +171,29 @@ class AdminSearchStudents(Resource):
                 "is_active": s.user.is_active
             })
         return result, 200
+    
+class AdminSearchCompanies(Resource):
+    @jwt_required()
+    def get(self):
+        claims=get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message":"Admin access required"},403
+        query= request.args.get('q')
+        companies = Company.query.filter(
+            (Company.name.ilike(f"%{query}%")) |
+            (Company.industry.ilike(f"%{query}%")) |
+            (Company.location.ilike(f"%{query}%"))
+        ).all()
+
+        result = []
+
+        for c in companies:
+            result.append({
+                "id": c.id,
+                "name": c.name,
+                "industry": c.industry,
+                "location": c.location,
+                "status": c.approval_status,
+                "is_active": c.user.is_active
+            })
+        return result, 200
