@@ -129,3 +129,17 @@ class AdminActivateStudent(Resource):
         user.is_active =True
         db.session.commit()
         return {"message": "Student activated"}
+    
+class AdminActivateCompany(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims = get_jwt()
+        if claims.get('role') !='admin':
+            return {"message":"Admin access required"},403
+        company = Company.query.get(id)
+        if not company:
+            return {'message':"Company not found"},404
+        user=User.query.get(company.user.id)
+        user.is_active = True
+        db.session.commit()
+        return{"message":"Company activated"}
