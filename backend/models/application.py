@@ -5,7 +5,7 @@ class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
     job_id = db.Column(db.Integer, db.ForeignKey("jobs.id"), nullable=False)
-    status = db.Column(db.String(20), default="Applied")
+    status = db.Column(db.String(20), default="applied")
     applied_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (

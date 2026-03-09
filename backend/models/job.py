@@ -17,7 +17,8 @@ class Job(db.Model):
     description = db.Column(db.Text)
     min_cgpa = db.Column(db.Float, nullable=False)
     deadline = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(20), default="Pending")  
+    salary = db.Column(db.Float)
+    status = db.Column(db.String(20), default="pending")  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     company = db.relationship("Company", backref="jobs")
