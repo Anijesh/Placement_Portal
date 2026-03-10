@@ -197,3 +197,25 @@ class AdminSearchCompanies(Resource):
                 "is_active": c.user.is_active
             })
         return result, 200
+    
+
+class AdminJobList(Resource):
+    @jwt_required()
+    def get(self):
+        claims=get_jwt()
+        if claims.get('role') != 'admin':
+            return{"message":"admin access required"}
+        jobs =Job.query.all()
+        result =[]
+        for job in jobs:
+            result.append({
+                "id":job.id,
+                "company":job.company.name,
+                "title" :job.title,
+                "description" : job.description,
+                "min_cgpa" : job.min_cgpa,
+                "deadline" : str(job.deadline),
+                "salary" : job.salary,
+                "status" : job.status,
+            })
+        return result,200
