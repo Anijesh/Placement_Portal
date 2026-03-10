@@ -1,4 +1,4 @@
-from flask import request
+from flask import request 
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import Student, Company, Job,User,Application
@@ -41,6 +41,9 @@ class StudentApplyJob(Resource):
         existing = Application.query.filter_by(student_id=student.id,job_id=job.id).first()
         if existing:
             return {'message':"Already applied for Application"},400
+        if student.cgpa < job.min_cgpa:
+            return {"message": "You do not meet the CGPA requirement"}, 400
+        
         application=Application(student_id = student.id,
                                 job_id = job.id)
         db.session.add(application)
