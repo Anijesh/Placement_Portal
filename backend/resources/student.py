@@ -43,7 +43,9 @@ class StudentApplyJob(Resource):
             return {'message':"Already applied for Application"},400
         if student.cgpa < job.min_cgpa:
             return {"message": "You do not meet the CGPA requirement"}, 400
-        
+        branch_ids = [branch.id for branch in job.eligible_branches]
+        if student.branch_id not in branch_ids:
+            return {"message": "Your branch is not eligible for this drive"}, 400
         application=Application(student_id = student.id,
                                 job_id = job.id)
         db.session.add(application)
