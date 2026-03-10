@@ -204,7 +204,7 @@ class AdminJobList(Resource):
     def get(self):
         claims=get_jwt()
         if claims.get('role') != 'admin':
-            return{"message":"admin access required"}
+            return{"message":"admin access required"},403
         jobs =Job.query.all()
         result =[]
         for job in jobs:
@@ -219,3 +219,17 @@ class AdminJobList(Resource):
                 "status" : job.status,
             })
         return result,200
+    
+class AdminJobApprove(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims=get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message":"admin access required"},403
+        job = Job.query.get(id)
+        if not job:
+            return{"message": "job not found"},404
+        job.status="approved"
+        db.session.commit()
+        return {"message": "Placement drive approved"}, 200
+        
