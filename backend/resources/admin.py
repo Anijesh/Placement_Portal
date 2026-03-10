@@ -233,3 +233,16 @@ class AdminJobApprove(Resource):
         db.session.commit()
         return {"message": "Placement drive approved"}, 200
         
+
+class AdminJobReject(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims = get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message": "admin access required"},403
+        job = Job.query.get(id)
+        if not job:
+            return{"message": 'job not found'},404   
+        job.status ='rejected'
+        db.session.commit()
+        return{'message':"placement drive rejected"},200
