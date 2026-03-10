@@ -52,3 +52,23 @@ class StudentApplyJob(Resource):
         db.session.commit()
         return {"message":"Application submitted successfully"},201
         
+class StudentApplicationList(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != "student":
+            return {"message":"Student access required"},403
+        student=Student.query.filter_by(user_id=get_jwt_identity()).first()
+        applications = Application.query.filter_by(student_id=student.id).all()
+        if not applications:
+            return {"message":"No Application Found"},404
+        result=[]
+        for application in applications:
+            result.append({'application_id':application.id,
+                           "job_title":application.job.title,
+                           'company':application.job.company.name,
+                           "status":application.status,
+                           'salary':application.job.salary,
+                           'applied_at':str(application.applied_at),
+                          })
+        return result,200
