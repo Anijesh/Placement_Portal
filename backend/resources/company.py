@@ -29,3 +29,24 @@ class CompanyCreateJob(Resource):
         db.session.commit()
 
         return {"message": "Placement drive created"}, 201
+
+class CompanyJobList(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return { "message":"Company access required"}
+        company = Company.query.filter_by(user_id = get_jwt_identity()).first()
+        jobs = Job.query.filter_by(company_id = company.id).all()
+        results =[]
+        for job in jobs:
+            results.append({
+                "id":job.id,
+                "title" :job.title,
+                "description" : job.description,
+                "min_cgpa" : job.min_cgpa,
+                "deadline" : str(job.deadline),
+                "salary" : job.salary,
+                "status" : job.status,
+            })
+        return results
