@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
-from models import User, Student, Company, Job
+from models import User, Student, Company, Job,Application
 from extensions import db
 from datetime import datetime
 
@@ -49,4 +49,31 @@ class CompanyJobList(Resource):
                 "salary" : job.salary,
                 "status" : job.status,
             })
-        return results
+        return results,200
+    
+class CompanyApplicatonList(Resource):
+    @jwt_required()
+    def get(self,id):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message":"company access required"},403
+        company=Company.query.filter_by(user_id = get_jwt_identity()).first()
+        job=Job.query.get(id)
+        if(job.company != company):
+            return {'message':"not access to see"},403
+        applications=Application.query.filter_by(job_id= job.id).all()
+        result=[]
+        for application in applications:
+            result.append({'application_id':application.id,
+                           "job_title":application.job.title,
+                           'student':application.student.name,
+                           'branch':application.student.branch.name,
+                           'cgpa':application.student.cgpa,
+                           'skills':application.student.skills,
+                           'graduation_year':str(application.student.graduation_year),
+                           "status":application.status,
+                           'salary':application.job.salary,
+                           'applied_at':str(application.applied_at),
+
+            })
+        return result,200
