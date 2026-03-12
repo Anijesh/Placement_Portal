@@ -90,3 +90,17 @@ class CompanyShortlistApplication(Resource):
         application.status='shortlisted'
         db.session.commit()
         return {"message": "Student shortlisted"}, 200
+
+class CompanyRejectApplication(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message":"company access required"},403
+        company=Company.query.filter_by(user_id = get_jwt_identity()).first()
+        application = Application.query.get(id)
+        if not application:
+            return {'message':"Application not found"},404
+        application.status='rejected'
+        db.session.commit()
+        return {"message": "Student application rejected "}, 200
