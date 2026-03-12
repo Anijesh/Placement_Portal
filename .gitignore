@@ -8,6 +8,8 @@ instance/
 venv/
 env/
 
+.vscode
+
 # Node
 node_modules/
 dist/
