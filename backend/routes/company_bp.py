@@ -4,6 +4,7 @@ from resources.company import(
     CompanyCreateJob,
     CompanyJobList,
     CompanyApplicatonList,
+    CompanyShortlistApplication,
 )
 
 company_bp=Blueprint('company_bp',__name__)
@@ -12,3 +13,4 @@ api=Api(company_bp)
 api.add_resource(CompanyCreateJob,'/create/job')
 api.add_resource(CompanyJobList,'/job/list')
 api.add_resource(CompanyApplicatonList,'/job/application/<int:id>/list')
+api.add_resource(CompanyShortlistApplication,'/application/<int:id>/shortlist')
