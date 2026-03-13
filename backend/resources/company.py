@@ -1,9 +1,9 @@
 from flask_restful import Resource
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
-from models import User, Student, Company, Job,Application
+from models import User, Student, Company, Job,Application,Placement
 from extensions import db
-from datetime import datetime
+from datetime import datetime,date
 
 
 class CompanyCreateJob(Resource):
@@ -104,3 +104,23 @@ class CompanyRejectApplication(Resource):
         application.status='rejected'
         db.session.commit()
         return {"message": "Student application rejected "}, 200
+
+class CompanyAcceptApplication(Resource):
+    @jwt_required()
+    def put(self,id):
+        claims=get_jwt()
+        if claims.get('role') != 'company':
+            return {'message':"company access required"},403
+        application = Application.query.get(id)
+        if not application:
+            return {'message':"Application not found"},404
+        application.status ='accepted'
+        placement=Placement(application_id=application.id,
+                            offered_salary=application.job.salary,
+                            joining_date=date.today())
+        db.session.add(placement)
+        db.session.commit()
+
+        return {"message": "Student selected successfully"}, 200
+    
+        
