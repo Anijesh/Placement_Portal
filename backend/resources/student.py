@@ -72,3 +72,29 @@ class StudentApplicationList(Resource):
                            'applied_at':str(application.applied_at),
                           })
         return result,200
+
+class StudentPlacementHistory(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != "student":
+            return {"message":"Student access required"},403
+        
+        student = Student.query.filter_by(user_id=get_jwt_identity()).first()
+        applications = Application.query.filter_by(
+            student_id=student.id,
+            status="accepted"
+        ).all()
+
+        result = []
+
+        for application in applications:
+            placement = application.placement
+            result.append({
+                "company": application.job.company.name,
+                "job_title": application.job.title,
+                "salary": placement.offered_salary,
+                "joining_date": str(placement.joining_date)
+            })
+        return result, 200
+
