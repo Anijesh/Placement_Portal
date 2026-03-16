@@ -89,12 +89,13 @@ class StudentPlacementHistory(Resource):
         result = []
 
         for application in applications:
-            placement = application.placement
-            result.append({
-                "company": application.job.company.name,
-                "job_title": application.job.title,
-                "salary": placement.offered_salary,
-                "joining_date": str(placement.joining_date)
-            })
+            placement = application.placement[0]
+            if placement:
+                result.append({
+                    "company": application.job.company.name,
+                    "job_title": application.job.title,
+                    "salary": placement.offered_salary,
+                    "joining_date": str(placement.joining_date)
+                })
         return result, 200
 
