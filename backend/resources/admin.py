@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt
-from models import Student, Company, Job,User ,Application
+from models import Student, Company, Job,User ,Application,Placement
 from extensions import db
 
 class AdminStatsResource(Resource):
@@ -266,5 +266,24 @@ class AdminApplicationList(Resource):
                 'job_title':application.job.title,
                 'offered_salary':application.job.salary,
                 'status':application.status,
+            })
+            return result,200
+        
+class AdminPlacementList(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'admin':
+            return {"message": "admin access rrquired"},403
+        placements=Placement.query.all()
+        result =[]
+        for placement in placements:
+            result.append({
+                'application_id':placement.application.id,
+                'student_name':placement.application.student.name,
+                'company_name':placement.application.job.company.name,
+                'job_title': placement.application.job.title,
+                'offered_salary':placement.offered_salary,
+                'joining_date':str(placement.joining_date),
             })
             return result,200
