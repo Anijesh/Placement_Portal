@@ -10,4 +10,4 @@ class Placement(db.Model):
     offered_salary = db.Column(db.Float)
     joining_date = db.Column(db.Date)
 
-    application = db.relationship("Application", backref="placement")
+    application = db.relationship("Application", backref=db.backref("placement", uselist=False))

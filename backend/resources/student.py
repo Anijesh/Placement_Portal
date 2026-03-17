@@ -89,7 +89,7 @@ class StudentPlacementHistory(Resource):
         result = []
 
         for application in applications:
-            placement = application.placement[0]
+            placement = application.placement
             if placement:
                 result.append({
                     "company": application.job.company.name,
