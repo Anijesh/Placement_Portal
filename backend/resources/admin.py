@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt
-from models import Student, Company, Job,User
+from models import Student, Company, Job,User ,Application
 from extensions import db
 
 class AdminStatsResource(Resource):
@@ -246,3 +246,25 @@ class AdminJobReject(Resource):
         job.status ='rejected'
         db.session.commit()
         return{'message':"placement drive rejected"},200
+
+
+class AdminApplicationList(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'admin':
+            return {'message': 'admin access required'}
+        
+        applications= Application.query.all()
+        result=[]
+        for application in applications:
+            result.append({
+                'application_id':application.id,
+                'student_name':application.student.name,
+                'student_branch':application.student.branch.name,
+                'company':application.job.company.name,
+                'job_title':application.job.title,
+                'offered_salary':application.job.salary,
+                'status':application.status,
+            })
+            return result,200
