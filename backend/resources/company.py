@@ -87,6 +87,8 @@ class CompanyShortlistApplication(Resource):
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
+        if application.job.company.user_id != get_jwt_identity():
+            return {"message": "Unauthorized"}, 403
         application.status='shortlisted'
         db.session.commit()
         return {"message": "Student shortlisted"}, 200
@@ -101,6 +103,8 @@ class CompanyRejectApplication(Resource):
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
+        if application.job.company.user_id != get_jwt_identity():
+            return {"message": "Unauthorized"}, 403
         application.status='rejected'
         db.session.commit()
         return {"message": "Student application rejected "}, 200
@@ -114,6 +118,8 @@ class CompanyAcceptApplication(Resource):
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
+        if application.job.company.user_id != get_jwt_identity():
+            return {"message": "Unauthorized"}, 403
         application.status ='accepted'
         placement=Placement(application_id=application.id,
                             offered_salary=application.job.salary,
