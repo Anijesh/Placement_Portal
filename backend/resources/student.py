@@ -65,6 +65,7 @@ class StudentApplicationList(Resource):
         result=[]
         for application in applications:
             result.append({'application_id':application.id,
+                           "job_id": application.job.id,
                            "job_title":application.job.title,
                            'company':application.job.company.name,
                            "status":application.status,
