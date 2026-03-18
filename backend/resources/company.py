@@ -12,9 +12,13 @@ class CompanyCreateJob(Resource):
         claims = get_jwt()
         if claims.get("role") != 'company':
             return {"message": "Company access required"}
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+        if not company:
+            return {"message": "Company not found"}, 404
+        if company.approval_status != "approved":
+            return {"message": "Company not approved"}, 403
         data = request.get_json()
         deadline_date = datetime.strptime(data["deadline"], "%Y-%m-%d").date()
-        company= Company.query.filter_by(user_id =get_jwt_identity()).first()
         job = Job(
             company_id=company.id,
             title=data["title"],
