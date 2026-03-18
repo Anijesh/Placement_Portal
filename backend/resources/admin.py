@@ -267,7 +267,7 @@ class AdminApplicationList(Resource):
                 'offered_salary':application.job.salary,
                 'status':application.status,
             })
-            return result,200
+        return result,200
         
 class AdminPlacementList(Resource):
     @jwt_required()
