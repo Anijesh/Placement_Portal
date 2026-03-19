@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from models import User, Student, Company
 from extensions import db
 
@@ -62,3 +62,8 @@ class LoginResource(Resource):
             "access_token": access_token,
             "role": user.role
         }, 200
+    
+class LogoutResource(Resource):
+    @jwt_required()
+    def post(self):
+        return {"message": "Successfully logged out"}, 200
