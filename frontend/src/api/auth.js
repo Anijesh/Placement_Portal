@@ -13,3 +13,12 @@ export function register(data) {
 export function getBranches() {
   return axios.get(`http://127.0.0.1:5001/api/branches`)
 }
+
+export function logoutAPI() {
+  const token = localStorage.getItem("token")
+  return axios.post(`${API}/logout`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}

@@ -92,6 +92,7 @@
 
 <script>
 import { fetchJobs, applyJob, fetchApplications, fetchPlacements } from '../api/student';
+import { logoutAPI } from '../api/auth';
 
 export default {
   data() {
@@ -172,10 +173,16 @@ export default {
         this.applyingId = null;
       }
     },
-    handleLogout() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      this.$router.push("/");
+    async handleLogout() {
+      try {
+        await logoutAPI();
+      } catch (err) {
+        console.error("Backend logout failed:", err);
+      } finally {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        this.$router.push("/");
+      }
     },
     formatDate(dateString) {
       if (!dateString) return "N/A";
