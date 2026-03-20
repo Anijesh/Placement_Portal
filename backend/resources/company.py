@@ -124,7 +124,7 @@ class CompanyAcceptApplication(Resource):
             return {'message':"Application not found"},404
         if application.job.company.user_id != get_jwt_identity():
             return {"message": "Unauthorized"}, 403
-        application.status ='accepted'
+        application.status ='selected'
         placement=Placement(application_id=application.id,
                             offered_salary=application.job.salary,
                             joining_date=date.today())

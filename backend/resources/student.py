@@ -84,7 +84,7 @@ class StudentPlacementHistory(Resource):
         student = Student.query.filter_by(user_id=get_jwt_identity()).first()
         applications = Application.query.filter_by(
             student_id=student.id,
-            status="accepted"
+            status="selected"
         ).all()
 
         result = []
