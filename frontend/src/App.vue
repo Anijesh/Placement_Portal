@@ -3,13 +3,13 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <RouterView />
+  <div class="app-wrapper">
+    <RouterView />
+  </div>
 </template>
 
-<style>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
+<style scoped>
+.app-wrapper {
+  min-height: 100vh;
 }
 </style>
