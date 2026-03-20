@@ -365,12 +365,17 @@ export default {
   text-transform: uppercase;
 }
 
-.status-badge.pending {
+.status-badge.pending, .status-badge.applied {
   background: #feebc8;
   color: #dd6b20;
 }
 
-.status-badge.accepted {
+.status-badge.shortlisted {
+  background: #ebf8ff;
+  color: #3182ce;
+}
+
+.status-badge.accepted, .status-badge.selected, .status-badge.approved {
   background: #c6f6d5;
   color: #38a169;
 }
