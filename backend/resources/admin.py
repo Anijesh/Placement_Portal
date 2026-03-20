@@ -101,7 +101,7 @@ class AdminDeactivateStudent(Resource):
         user = User.query.get(student.user_id)
         user.is_active = False
         db.session.commit()
-        return {"message": "Student deactivated"}
+        return {"message": "Student deactivated"}, 200
     
 class AdminDeactivateCompany(Resource):
     @jwt_required()
@@ -286,4 +286,4 @@ class AdminPlacementList(Resource):
                 'offered_salary':placement.offered_salary,
                 'joining_date':str(placement.joining_date),
             })
-            return result,200
+        return result,200
