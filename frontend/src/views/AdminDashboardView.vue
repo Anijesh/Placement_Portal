@@ -9,7 +9,7 @@
 
     <main class="dashboard-main fade-in">
       
-      <!-- Stats Section -->
+
       <section class="dashboard-section">
         <h3>Platform Overview</h3>
         <div v-if="statsLoading" class="loading-state">Loading stats...</div>
@@ -29,7 +29,7 @@
         </div>
       </section>
 
-      <!-- Companies Section -->
+
       <section class="dashboard-section">
         <h3>Companies</h3>
         <div v-if="companiesLoading" class="loading-state">Loading companies...</div>
@@ -57,7 +57,7 @@
         </div>
       </section>
 
-      <!-- Students Section -->
+
       <section class="dashboard-section">
         <h3>Students</h3>
         <div v-if="studentsLoading" class="loading-state">Loading students...</div>
@@ -84,7 +84,7 @@
         </div>
       </section>
 
-      <!-- Jobs Section -->
+
       <section class="dashboard-section">
         <h3>Job Postings</h3>
         <div v-if="jobsLoading" class="loading-state">Loading jobs...</div>
@@ -112,7 +112,7 @@
         </div>
       </section>
 
-      <!-- Applications Section -->
+ 
       <section class="dashboard-section">
         <h3>Applications</h3>
         <div v-if="applicationsLoading" class="loading-state">Loading applications...</div>
@@ -135,7 +135,7 @@
         </div>
       </section>
 
-      <!-- Placements Section -->
+
       <section class="dashboard-section">
         <h3>Placements</h3>
         <div v-if="placementsLoading" class="loading-state">Loading placements...</div>
@@ -269,7 +269,7 @@ export default {
       }
     },
     
-    // Company Actions
+ 
     async handleApproveCompany(id) {
       if (!confirm("Approve this company?")) return;
       try {
@@ -307,7 +307,7 @@ export default {
       }
     },
 
-    // Student Actions
+
     async handleActivateStudent(id) {
       if (!confirm("Activate this student account?")) return;
       try {
@@ -327,7 +327,7 @@ export default {
       }
     },
 
-    // Job Actions
+
     async handleApproveJob(id) {
       if (!confirm("Approve this job posting?")) return;
       try {
