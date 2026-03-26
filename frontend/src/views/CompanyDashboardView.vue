@@ -9,7 +9,7 @@
 
     <main class="dashboard-main fade-in">
       
-      <!-- Create Job Section -->
+
       <section class="dashboard-section create-job-section">
         <div class="section-header">
           <h3>Create Placement Drive</h3>
@@ -51,7 +51,7 @@
         </form>
       </section>
 
-      <!-- My Placement Drives Section -->
+ 
       <section class="dashboard-section">
         <h3>My Placement Drives</h3>
         <div v-if="jobsLoading" class="loading-state">Loading your drives...</div>
@@ -77,7 +77,7 @@
         </div>
       </section>
 
-      <!-- Applications Modal/Section -->
+
       <section v-if="selectedJobId !== null" class="dashboard-section applications-section slide-down" ref="applicationsSection">
         <div class="section-header">
           <h3>Applicants for: {{ selectedJobTitle }}</h3>
@@ -202,7 +202,7 @@ export default {
           this.applications = [];
         }
         
-        // Scroll to applications section
+
         this.$nextTick(() => {
           if (this.$refs.applicationsSection) {
             this.$refs.applicationsSection.scrollIntoView({ behavior: 'smooth' });
