@@ -48,11 +48,11 @@ export function deactivateStudent(id) {
 }
 
 export function searchStudents(query) {
-  return axios.get(`${API}/students/search?query=${query}`, getAuthHeaders());
+  return axios.get(`${API}/students/search?q=${query}`, getAuthHeaders());
 }
 
 export function searchCompanies(query) {
-  return axios.get(`${API}/companies/search?query=${query}`, getAuthHeaders());
+  return axios.get(`${API}/companies/search?q=${query}`, getAuthHeaders());
 }
 
 export function fetchJobs() {
