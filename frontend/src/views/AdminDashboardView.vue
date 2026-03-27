@@ -56,8 +56,8 @@
             <div class="card-footer actions">
               <button v-if="company.status !== 'approved'" @click="handleApproveCompany(company.id)" class="action-btn approve">Approve</button>
               <button v-if="company.status !== 'rejected'" @click="handleRejectCompany(company.id)" class="action-btn reject">Reject</button>
-              <button @click="handleActivateCompany(company.id)" class="action-btn secondary">Activate</button>
-              <button @click="handleDeactivateCompany(company.id)" class="action-btn danger">Deactivate</button>
+              <button v-if="!company.is_active" @click="handleActivateCompany(company.id)" class="action-btn secondary">Activate</button>
+              <button v-if="company.is_active" @click="handleDeactivateCompany(company.id)" class="action-btn danger">Deactivate</button>
             </div>
           </div>
         </div>
@@ -89,8 +89,8 @@
               </div>
             </div>
             <div class="card-footer actions">
-              <button @click="handleActivateStudent(student.id)" class="action-btn secondary">Activate</button>
-              <button @click="handleDeactivateStudent(student.id)" class="action-btn danger">Deactivate</button>
+              <button v-if="!student.is_active" @click="handleActivateStudent(student.id)" class="action-btn secondary">Activate</button>
+              <button v-if="student.is_active" @click="handleDeactivateStudent(student.id)" class="action-btn danger">Deactivate</button>
             </div>
           </div>
         </div>
