@@ -43,11 +43,12 @@
           <div v-for="company in companies" :key="company.id" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ company.name }}</h4>
-              <span class="job-title">{{ company.industry }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
                 <span><strong>ID:</strong> {{ company.id }}</span>
+                <span><strong>Name:</strong> {{ company.name }}</span>
+                <span><strong>Industry:</strong> {{ company.industry }}</span>
                 <span><strong>Location:</strong> {{ company.location }}</span>
                 <span><strong>Approval Status:</strong> <span :class="['status-badge', company.status?.toLowerCase() || 'pending']">{{ company.status || 'pending' }}</span></span>
                 <span><strong>Account Status:</strong> <span :class="['status-badge', company.is_active ? 'approved' : 'rejected']">{{ company.is_active ? 'Active' : 'Inactive' }}</span></span>
@@ -77,13 +78,15 @@
           <div v-for="student in students" :key="student.id" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ student.name }}</h4>
-              <span class="job-title">{{ student.branch }} | {{ student.graduation_year }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
                 <span><strong>ID:</strong> {{ student.id }}</span>
+                <span><strong>Name:</strong> {{ student.name }}</span>
                 <span><strong>Email:</strong> {{ student.email }}</span>
+                <span><strong>Branch:</strong> {{ student.branch }}</span>
                 <span><strong>CGPA:</strong> {{ student.cgpa }}</span>
+                <span><strong>Graduation Year:</strong> {{ student.graduation_year }}</span>
                 <span><strong>Skills:</strong> {{ student.skills }}</span>
                 <span><strong>Account Status:</strong> <span :class="['status-badge', student.is_active ? 'approved' : 'rejected']">{{ student.is_active ? 'Active' : 'Inactive' }}</span></span>
               </div>
@@ -104,13 +107,14 @@
         <div v-else class="card-list">
           <div v-for="job in jobs" :key="job.id" class="card">
             <div class="card-header">
-              <h4 class="company-name">{{ job.company }}</h4>
-              <span class="job-title">{{ job.title }}</span>
+              <h4 class="company-name">{{ job.title }}</h4>
             </div>
             <div class="card-body">
-              <p class="description">{{ job.description }}</p>
               <div class="job-details">
                 <span><strong>Job ID:</strong> {{ job.id }}</span>
+                <span><strong>Company:</strong> {{ job.company }}</span>
+                <span><strong>Title:</strong> {{ job.title }}</span>
+                <span><strong>Description:</strong> {{ job.description }}</span>
                 <span><strong>Min CGPA:</strong> {{ job.min_cgpa }}</span>
                 <span><strong>Salary:</strong> {{ job.salary }}</span>
                 <span><strong>Deadline:</strong> {{ formatDate(job.deadline) }}</span>
@@ -134,14 +138,15 @@
           <div v-for="app in applications" :key="app.application_id" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ app.student_name }}</h4>
-              <span class="job-title">{{ app.student_branch }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
-                <span><strong>App ID:</strong> {{ app.application_id }}</span>
+                <span><strong>Application ID:</strong> {{ app.application_id }}</span>
+                <span><strong>Student Name:</strong> {{ app.student_name }}</span>
+                <span><strong>Student Branch:</strong> {{ app.student_branch }}</span>
                 <span><strong>Company:</strong> {{ app.company }}</span>
-                <span><strong>Role:</strong> {{ app.job_title }}</span>
-                <span><strong>Salary:</strong> {{ app.offered_salary }}</span>
+                <span><strong>Job Title:</strong> {{ app.job_title }}</span>
+                <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
                 <span><strong>Status:</strong> <span :class="['status-badge', app.status?.toLowerCase() || 'pending']">{{ app.status || 'pending' }}</span></span>
               </div>
             </div>
@@ -158,14 +163,15 @@
           <div v-for="(p, index) in placements" :key="index" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ p.student_name }}</h4>
-              <span class="job-title">{{ p.company_name }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
                 <span><strong>Application ID:</strong> {{ p.application_id }}</span>
-                <span><strong>Role:</strong> {{ p.job_title }}</span>
-                <span><strong>Salary:</strong> {{ p.offered_salary }}</span>
-                <span><strong>Joining:</strong> {{ formatDate(p.joining_date) }}</span>
+                <span><strong>Student Name:</strong> {{ p.student_name }}</span>
+                <span><strong>Company Name:</strong> {{ p.company_name }}</span>
+                <span><strong>Job Title:</strong> {{ p.job_title }}</span>
+                <span><strong>Offered Salary:</strong> {{ p.offered_salary }}</span>
+                <span><strong>Joining Date:</strong> {{ formatDate(p.joining_date) }}</span>
               </div>
             </div>
           </div>
