@@ -26,6 +26,10 @@
             <span class="stat-value">{{ stats.jobs || 0 }}</span>
             <span class="stat-label">Total Jobs</span>
           </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ stats.applications || 0 }}</span>
+            <span class="stat-label">Total Applications</span>
+          </div>
         </div>
       </section>
 

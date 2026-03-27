@@ -14,10 +14,12 @@ class AdminStatsResource(Resource):
         students = Student.query.count()
         companies = Company.query.count()
         jobs = Job.query.count()
+        applications = Application.query.count()
         return {
             "students": students,
             "companies": companies,
-            "jobs": jobs
+            "jobs": jobs,
+            "applications": applications
         }, 200
 
 class AdminCompanyListResource(Resource):
@@ -155,11 +157,22 @@ class AdminSearchStudents(Resource):
         if claims.get('role') !='admin':
             return {"message":"Admin access required"},403      
         query= request.args.get('q')
-        students=Student.query.join(User).filter(
-            (Student.name.ilike(f"%{query}%")) |
-            (Student.skills.ilike(f"%{query}%")) |
-            (User.email.ilike(f"%{query}%"))
-        ).all()
+        
+        try:
+            query_id = int(query)
+            students = Student.query.join(User).filter(
+                (Student.id == query_id) |
+                (Student.name.ilike(f"%{query}%")) |
+                (Student.skills.ilike(f"%{query}%")) |
+                (User.email.ilike(f"%{query}%"))
+            ).all()
+        except (ValueError, TypeError):
+            students=Student.query.join(User).filter(
+                (Student.name.ilike(f"%{query}%")) |
+                (Student.skills.ilike(f"%{query}%")) |
+                (User.email.ilike(f"%{query}%"))
+            ).all()
+
         result=[]
         for s in students:
             result.append({
