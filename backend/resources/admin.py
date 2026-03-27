@@ -302,3 +302,4 @@ class AdminPlacementList(Resource):
                 'joining_date':str(placement.joining_date),
             })
         return result,200
+
