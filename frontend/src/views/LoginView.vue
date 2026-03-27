@@ -177,7 +177,7 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
 }
 
-/* Button */
+
 .submit-btn {
   margin-top: 0.5rem;
   width: 100%;
