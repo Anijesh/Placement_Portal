@@ -164,7 +164,7 @@ export default {
 </script>
 
 <style scoped>
-/* Base Layout */
+
 .register-page {
   min-height: 100vh;
   width: 100vw;
@@ -178,7 +178,7 @@ export default {
   margin: 0;
 }
 
-/* Basic Container */
+
 .register-container {
   background: #ffffff;
   border-radius: 12px;
@@ -190,7 +190,7 @@ export default {
   margin: 2rem 0;
 }
 
-/* Brand Section */
+
 .brand-section {
   text-align: center;
   margin-bottom: 2rem;
@@ -209,7 +209,7 @@ export default {
   margin: 0;
 }
 
-/* Form Styles */
+
 .register-form {
   display: flex;
   flex-direction: column;
@@ -265,7 +265,7 @@ textarea {
   min-height: 80px;
 }
 
-/* Button */
+
 .submit-btn {
   margin-top: 0.5rem;
   width: 100%;
@@ -292,7 +292,7 @@ textarea {
   cursor: not-allowed;
 }
 
-/* Login Link */
+
 .login-link {
   text-align: center;
   margin-top: 1.5rem;
@@ -311,7 +311,7 @@ textarea {
   text-decoration: underline;
 }
 
-/* Animations */
+
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
@@ -343,7 +343,7 @@ textarea {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+
 @media (max-width: 480px) {
   .register-container {
     padding: 1.5rem;
