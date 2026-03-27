@@ -31,7 +31,12 @@
 
 
       <section class="dashboard-section">
-        <h3>Companies</h3>
+        <div class="section-header-row">
+          <h3>Companies</h3>
+          <div class="search-wrapper">
+            <input v-model="companySearch" @input="handleCompanySearch" type="text" placeholder="Search companies..." class="search-input" />
+          </div>
+        </div>
         <div v-if="companiesLoading" class="loading-state">Loading companies...</div>
         <div v-else-if="companies.length === 0" class="empty-state">No companies registered yet.</div>
         <div v-else class="card-list">
@@ -45,6 +50,10 @@
                 <span><strong>ID:</strong> {{ company.id }}</span>
                 <span><strong>Location:</strong> {{ company.location }}</span>
                 <span><strong>Status:</strong> <span :class="['status-badge', company.status?.toLowerCase() || 'pending']">{{ company.status || 'pending' }}</span></span>
+                <span v-if="company.is_active !== undefined">
+                  <strong>Account:</strong> 
+                  <span :class="['status-badge', company.is_active ? 'approved' : 'rejected']">{{ company.is_active ? 'Active' : 'Inactive' }}</span>
+                </span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -59,7 +68,12 @@
 
 
       <section class="dashboard-section">
-        <h3>Students</h3>
+        <div class="section-header-row">
+          <h3>Students</h3>
+          <div class="search-wrapper">
+            <input v-model="studentSearch" @input="handleStudentSearch" type="text" placeholder="Search students..." class="search-input" />
+          </div>
+        </div>
         <div v-if="studentsLoading" class="loading-state">Loading students...</div>
         <div v-else-if="students.length === 0" class="empty-state">No students registered yet.</div>
         <div v-else class="card-list">
@@ -74,6 +88,10 @@
                 <span><strong>Email:</strong> {{ student.email }}</span>
                 <span><strong>CGPA:</strong> {{ student.cgpa }}</span>
                 <span><strong>Skills:</strong> {{ student.skills }}</span>
+                <span v-if="student.is_active !== undefined">
+                  <strong>Account:</strong> 
+                  <span :class="['status-badge', student.is_active ? 'approved' : 'rejected']">{{ student.is_active ? 'Active' : 'Inactive' }}</span>
+                </span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -98,6 +116,7 @@
             <div class="card-body">
               <p class="description">{{ job.description }}</p>
               <div class="job-details">
+                <span><strong>Job ID:</strong> {{ job.id }}</span>
                 <span><strong>Min CGPA:</strong> {{ job.min_cgpa }}</span>
                 <span><strong>Salary:</strong> {{ job.salary }}</span>
                 <span><strong>Deadline:</strong> {{ formatDate(job.deadline) }}</span>
@@ -125,6 +144,7 @@
             </div>
             <div class="card-body">
               <div class="job-details">
+                <span><strong>App ID:</strong> {{ app.application_id }}</span>
                 <span><strong>Company:</strong> {{ app.company }}</span>
                 <span><strong>Role:</strong> {{ app.job_title }}</span>
                 <span><strong>Salary:</strong> {{ app.offered_salary }}</span>
@@ -148,6 +168,7 @@
             </div>
             <div class="card-body">
               <div class="job-details">
+                <span><strong>App ID:</strong> {{ p.application_id }}</span>
                 <span><strong>Role:</strong> {{ p.job_title }}</span>
                 <span><strong>Salary:</strong> {{ p.offered_salary }}</span>
                 <span><strong>Joining:</strong> {{ formatDate(p.joining_date) }}</span>
@@ -164,8 +185,8 @@
 <script>
 import { 
   fetchStats, 
-  fetchCompanies, approveCompany, rejectCompany, activateCompany, deactivateCompany,
-  fetchStudents, activateStudent, deactivateStudent,
+  fetchCompanies, approveCompany, rejectCompany, activateCompany, deactivateCompany, searchCompanies,
+  fetchStudents, activateStudent, deactivateStudent, searchStudents,
   fetchJobs, approveJob, rejectJob,
   fetchApplications, fetchPlacements 
 } from '../api/admin';
@@ -180,6 +201,9 @@ export default {
       jobs: [],
       applications: [],
       placements: [],
+      companySearch: "",
+      studentSearch: "",
+      searchTimeout: null,
       statsLoading: true,
       companiesLoading: true,
       studentsLoading: true,
@@ -269,7 +293,44 @@ export default {
       }
     },
     
- 
+    handleCompanySearch() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(async () => {
+        if (!this.companySearch.trim()) {
+          this.loadCompanies();
+          return;
+        }
+        this.companiesLoading = true;
+        try {
+          const res = await searchCompanies(this.companySearch);
+          this.companies = res.data;
+        } catch (err) {
+          console.error("Search failed:", err);
+        } finally {
+          this.companiesLoading = false;
+        }
+      }, 300);
+    },
+    handleStudentSearch() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(async () => {
+        if (!this.studentSearch.trim()) {
+          this.loadStudents();
+          return;
+        }
+        this.studentsLoading = true;
+        try {
+          const res = await searchStudents(this.studentSearch);
+          this.students = res.data;
+        } catch (err) {
+          console.error("Search failed:", err);
+        } finally {
+          this.studentsLoading = false;
+        }
+      }, 300);
+    },
+    
+  
     async handleApproveCompany(id) {
       if (!confirm("Approve this company?")) return;
       try {
@@ -293,6 +354,7 @@ export default {
       try {
         await activateCompany(id);
         alert("Company Activated");
+        this.loadCompanies();
       } catch (err) {
         alert("Action failed.");
       }
@@ -302,6 +364,7 @@ export default {
       try {
         await deactivateCompany(id);
         alert("Company Deactivated");
+        this.loadCompanies();
       } catch (err) {
         alert("Action failed.");
       }
@@ -313,6 +376,7 @@ export default {
       try {
         await activateStudent(id);
         alert("Student Activated");
+        this.loadStudents();
       } catch (err) {
         alert("Action failed.");
       }
@@ -322,6 +386,7 @@ export default {
       try {
         await deactivateStudent(id);
         alert("Student Deactivated");
+        this.loadStudents();
       } catch (err) {
         alert("Action failed.");
       }
@@ -432,6 +497,38 @@ export default {
   font-weight: 600;
   border-bottom: 2px solid #e2e8f0;
   padding-bottom: 0.5rem;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.section-header-row h3 {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.search-input {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background: #fff;
+  color: #2d3748;
+  font-size: 0.9rem;
+  min-width: 250px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
 }
 
 .stats-grid {
