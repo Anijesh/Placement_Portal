@@ -35,7 +35,8 @@ class AdminCompanyListResource(Resource):
                 "name": c.name,
                 "industry": c.industry,
                 "location": c.location,
-                "status": c.approval_status
+                "status": c.approval_status,
+                "is_active": c.user.is_active
             })
         return result, 200
 
@@ -85,7 +86,8 @@ class AdminStudentListResource(Resource):
                 'email':student.user.email,
                 'cgpa':student.cgpa,
                 'graduation_year':student.graduation_year,
-                'skills':student.skills
+                'skills':student.skills,
+                'is_active': student.user.is_active
             })
         return result, 200
 

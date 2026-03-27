@@ -49,11 +49,8 @@
               <div class="job-details">
                 <span><strong>ID:</strong> {{ company.id }}</span>
                 <span><strong>Location:</strong> {{ company.location }}</span>
-                <span><strong>Status:</strong> <span :class="['status-badge', company.status?.toLowerCase() || 'pending']">{{ company.status || 'pending' }}</span></span>
-                <span v-if="company.is_active !== undefined">
-                  <strong>Account:</strong> 
-                  <span :class="['status-badge', company.is_active ? 'approved' : 'rejected']">{{ company.is_active ? 'Active' : 'Inactive' }}</span>
-                </span>
+                <span><strong>Approval Status:</strong> <span :class="['status-badge', company.status?.toLowerCase() || 'pending']">{{ company.status || 'pending' }}</span></span>
+                <span><strong>Account Status:</strong> <span :class="['status-badge', company.is_active ? 'approved' : 'rejected']">{{ company.is_active ? 'Active' : 'Inactive' }}</span></span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -88,10 +85,7 @@
                 <span><strong>Email:</strong> {{ student.email }}</span>
                 <span><strong>CGPA:</strong> {{ student.cgpa }}</span>
                 <span><strong>Skills:</strong> {{ student.skills }}</span>
-                <span v-if="student.is_active !== undefined">
-                  <strong>Account:</strong> 
-                  <span :class="['status-badge', student.is_active ? 'approved' : 'rejected']">{{ student.is_active ? 'Active' : 'Inactive' }}</span>
-                </span>
+                <span><strong>Account Status:</strong> <span :class="['status-badge', student.is_active ? 'approved' : 'rejected']">{{ student.is_active ? 'Active' : 'Inactive' }}</span></span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -168,7 +162,7 @@
             </div>
             <div class="card-body">
               <div class="job-details">
-                <span><strong>App ID:</strong> {{ p.application_id }}</span>
+                <span><strong>Application ID:</strong> {{ p.application_id }}</span>
                 <span><strong>Role:</strong> {{ p.job_title }}</span>
                 <span><strong>Salary:</strong> {{ p.offered_salary }}</span>
                 <span><strong>Joining:</strong> {{ formatDate(p.joining_date) }}</span>
