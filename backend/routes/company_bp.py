@@ -7,6 +7,8 @@ from resources.company import(
     CompanyShortlistApplication,
     CompanyRejectApplication,
     CompanyAcceptApplication,
+    CompanyCloseJob,
+    CompanyScheduleInterview,
 )
 
 company_bp=Blueprint('company_bp',__name__)
@@ -18,3 +20,5 @@ api.add_resource(CompanyApplicatonList,'/job/application/<int:id>/list')
 api.add_resource(CompanyShortlistApplication,'/application/<int:id>/shortlist')
 api.add_resource(CompanyRejectApplication,'/application/<int:id>/reject')
 api.add_resource(CompanyAcceptApplication,'/application/<int:id>/accept')
+api.add_resource(CompanyCloseJob,'/job/<int:id>/close')
+api.add_resource(CompanyScheduleInterview,'/application/<int:id>/interview')

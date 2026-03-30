@@ -78,6 +78,7 @@ class CompanyApplicatonList(Resource):
                            "status":application.status,
                            'salary':application.job.salary,
                            'applied_at':str(application.applied_at),
+                           'interview_date': str(application.interview_date) if application.interview_date else None,
 
             })
         return result,200
@@ -132,5 +133,50 @@ class CompanyAcceptApplication(Resource):
         db.session.commit()
 
         return {"message": "Student selected successfully"}, 200
-    
-        
+
+class CompanyCloseJob(Resource):
+    @jwt_required()
+    def put(self, id):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+        job = Job.query.get(id)
+        if not job:
+            return {"message": "Job not found"}, 404
+        if job.company_id != company.id:
+            return {"message": "Unauthorized"}, 403
+        job.status = 'closed'
+        db.session.commit()
+        return {"message": "Placement drive closed successfully"}, 200
+
+class CompanyScheduleInterview(Resource):
+    @jwt_required()
+    def put(self, id):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+
+        application = Application.query.get(id)
+        if not application:
+            return {"message": "Application not found"}, 404
+        if application.job.company.user_id != get_jwt_identity():
+            return {"message": "Unauthorized"}, 403
+        data = request.get_json()
+
+        if not data or 'interview_date' not in data:
+            return {"message": "Interview date is required"}, 400
+
+        try:
+            interview_date = datetime.strptime(data['interview_date'], "%Y-%m-%d")
+
+            application.interview_date = interview_date
+            application.status = 'interview_scheduled'
+
+            db.session.commit()
+
+            return {"message": "Interview scheduled successfully"}, 200
+
+        except ValueError:
+            return {"message": "Invalid date format. Use YYYY-MM-DD"}, 400
