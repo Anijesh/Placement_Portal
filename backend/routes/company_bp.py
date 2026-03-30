@@ -8,6 +8,7 @@ from resources.company import(
     CompanyRejectApplication,
     CompanyAcceptApplication,
     CompanyCloseJob,
+    CompanyReopenJob,
     CompanyScheduleInterview,
 )
 
@@ -21,4 +22,5 @@ api.add_resource(CompanyShortlistApplication,'/application/<int:id>/shortlist')
 api.add_resource(CompanyRejectApplication,'/application/<int:id>/reject')
 api.add_resource(CompanyAcceptApplication,'/application/<int:id>/accept')
 api.add_resource(CompanyCloseJob,'/job/<int:id>/close')
+api.add_resource(CompanyReopenJob,'/job/<int:id>/reopen')
 api.add_resource(CompanyScheduleInterview,'/application/<int:id>/interview')

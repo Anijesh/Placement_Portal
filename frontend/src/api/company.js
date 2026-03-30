@@ -39,6 +39,10 @@ export function closeJob(jobId) {
   return axios.put(`${API}/job/${jobId}/close`, {}, getAuthHeaders())
 }
 
+export function reopenJob(jobId) {
+  return axios.put(`${API}/job/${jobId}/reopen`, {}, getAuthHeaders())
+}
+
 export function scheduleInterview(appId, data) {
   return axios.put(`${API}/application/${appId}/interview`, data, getAuthHeaders())
 }

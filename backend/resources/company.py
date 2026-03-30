@@ -92,7 +92,7 @@ class CompanyShortlistApplication(Resource):
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
-        if application.job.company.user_id != get_jwt_identity():
+        if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
         application.status='shortlisted'
         db.session.commit()
@@ -108,7 +108,7 @@ class CompanyRejectApplication(Resource):
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
-        if application.job.company.user_id != get_jwt_identity():
+        if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
         application.status='rejected'
         db.session.commit()
@@ -120,10 +120,11 @@ class CompanyAcceptApplication(Resource):
         claims=get_jwt()
         if claims.get('role') != 'company':
             return {'message':"company access required"},403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
         application = Application.query.get(id)
         if not application:
             return {'message':"Application not found"},404
-        if application.job.company.user_id != get_jwt_identity():
+        if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
         application.status ='selected'
         placement=Placement(application_id=application.id,
@@ -150,6 +151,22 @@ class CompanyCloseJob(Resource):
         db.session.commit()
         return {"message": "Placement drive closed successfully"}, 200
 
+class CompanyReopenJob(Resource):
+    @jwt_required()
+    def put(self, id):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+        job = Job.query.get(id)
+        if not job:
+            return {"message": "Job not found"}, 404
+        if job.company_id != company.id:
+            return {"message": "Unauthorized"}, 403
+        job.status = 'approved'
+        db.session.commit()
+        return {"message": "Placement drive reopened successfully"}, 200
+
 class CompanyScheduleInterview(Resource):
     @jwt_required()
     def put(self, id):
@@ -161,7 +178,7 @@ class CompanyScheduleInterview(Resource):
         application = Application.query.get(id)
         if not application:
             return {"message": "Application not found"}, 404
-        if application.job.company.user_id != get_jwt_identity():
+        if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
         data = request.get_json()
 

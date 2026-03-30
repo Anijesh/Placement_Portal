@@ -13,7 +13,7 @@
       <section class="dashboard-section create-job-section">
         <div class="section-header">
           <h3>Create Placement Drive</h3>
-          <button @click="toggleCreateJobForm" class="action-btn secondary">
+          <button @click="toggleCreateForm" class="action-btn secondary">
             {{ showCreateForm ? 'Cancel' : 'Add New Drive' }}
           </button>
         </div>
@@ -73,6 +73,7 @@
             <div class="card-footer actions">
               <button @click="viewApplications(job.id, job.title)" class="action-btn secondary">View Applicants</button>
               <button v-if="job.status !== 'closed' && job.status !== 'rejected'" @click="handleCloseJob(job.id)" class="action-btn reject">Close Drive</button>
+              <button v-if="job.status === 'closed'" @click="handleReopenJob(job.id)" class="action-btn approve">Reopen Drive</button>
             </div>
           </div>
         </div>
@@ -95,17 +96,19 @@
             </div>
             <div class="card-body">
               <div class="job-details">
+                <span><strong>Job Title:</strong> {{ app.job_title }}</span>
+                <span><strong>Offered Salary:</strong> {{ app.salary }}</span>
                 <span><strong>Branch:</strong> {{ app.branch }}</span>
                 <span><strong>CGPA:</strong> {{ app.cgpa }}</span>
                 <span><strong>Grad Year:</strong> {{ app.graduation_year }}</span>
                 <span><strong>Skills:</strong> {{ app.skills }}</span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
-                <span v-if="app.interview_date"><strong>Interview:</strong> {{ formatDateTime(app.interview_date) }}</span>
+                <span v-if="app.interview_date"><strong>Interview:</strong> {{ formatDate(app.interview_date) }}</span>
               </div>
             </div>
             <div class="card-footer actions">
               <div v-if="app.status === 'shortlisted'" class="interview-scheduler">
-                <input v-model="interviewDates[app.application_id]" type="datetime-local" class="date-input" />
+                <input v-model="interviewDates[app.application_id]" type="date" class="date-input" />
                 <button @click="handleScheduleInterview(app.application_id)" class="action-btn approve" :disabled="!interviewDates[app.application_id]">Schedule Interview</button>
               </div>
               <button v-if="app.status === 'applied'" @click="handleShortlist(app.application_id)" class="action-btn approve">Shortlist</button>
@@ -129,6 +132,7 @@ import {
   rejectApplication, 
   acceptApplication,
   closeJob,
+  reopenJob,
   scheduleInterview
 } from '../api/company';
 import { logoutAPI } from '../api/auth';
@@ -242,11 +246,14 @@ export default {
 
     async handleScheduleInterview(appId) {
       if (!this.interviewDates[appId]) {
-        alert("Please select a date and time for the interview.");
+        alert("Please select a date for the interview.");
         return;
       }
       try {
-        await scheduleInterview(appId, { interview_date: this.interviewDates[appId] });
+        const payload = { 
+          interview_date: this.interviewDates[appId] 
+        };
+        await scheduleInterview(appId, payload);
         alert("Interview scheduled successfully.");
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
@@ -258,6 +265,16 @@ export default {
       if (!confirm("Are you sure you want to close this placement drive? Students will no longer be able to apply.")) return;
       try {
         await closeJob(jobId);
+        await this.loadJobs();
+      } catch (err) {
+        alert("Action failed.");
+      }
+    },
+
+    async handleReopenJob(jobId) {
+      if (!confirm("Are you sure you want to reopen this placement drive?")) return;
+      try {
+        await reopenJob(jobId);
         await this.loadJobs();
       } catch (err) {
         alert("Action failed.");
@@ -508,7 +525,6 @@ input:focus, textarea:focus {
 }
 
 .action-btn {
-  flex: 1;
   padding: 0.5rem;
   border-radius: 6px;
   border: none;
@@ -517,6 +533,10 @@ input:focus, textarea:focus {
   cursor: pointer;
   transition: background 0.2s;
   text-align: center;
+}
+
+.actions .action-btn {
+  flex: 1;
 }
 
 .action-btn.approve {
@@ -562,8 +582,8 @@ input:focus, textarea:focus {
 
 .submit-btn {
   margin-top: 0.5rem;
-  width: 100%;
-  padding: 0.8rem;
+  padding: 0.6rem 2rem;
+  align-self: flex-start;
   border-radius: 8px;
   border: none;
   background: #3182ce;
