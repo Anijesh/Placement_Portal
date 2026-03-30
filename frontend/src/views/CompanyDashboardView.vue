@@ -43,6 +43,16 @@
               <input v-model="newJob.deadline" type="date" required />
             </div>
           </div>
+
+          <div class="input-group">
+            <label>Eligible Branches</label>
+            <select v-model="newJob.eligible_branches" multiple>
+              <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+                {{ branch.name }}
+              </option>
+            </select>
+            <span class="hint">Hold Ctrl/Cmd to select multiple. Leave empty for all branches.</span>
+          </div>
           
           <button type="submit" class="submit-btn" :disabled="isCreating">
             <span v-if="isCreating" class="spinner"></span>
@@ -68,6 +78,8 @@
                 <span><strong>Min CGPA:</strong> {{ job.min_cgpa }}</span>
                 <span><strong>Salary:</strong> {{ job.salary }}</span>
                 <span><strong>Deadline:</strong> {{ formatDate(job.deadline) }}</span>
+                <span><strong>Eligible Branches:</strong> {{ job.eligible_branches?.join(', ') || 'All' }}</span>
+                <span><strong>Applicants:</strong> {{ job.applicant_count || 0 }}</span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -135,13 +147,14 @@ import {
   reopenJob,
   scheduleInterview
 } from '../api/company';
-import { logoutAPI } from '../api/auth';
+import { logoutAPI, getBranches } from '../api/auth';
 
 export default {
   data() {
     return {
       jobs: [],
       jobsLoading: true,
+      branches: [],
       
       showCreateForm: false,
       isCreating: false,
@@ -150,7 +163,8 @@ export default {
         description: '',
         min_cgpa: '',
         salary: '',
-        deadline: ''
+        deadline: '',
+        eligible_branches: []
       },
 
       selectedJobId: null,
@@ -162,8 +176,17 @@ export default {
   },
   async created() {
     this.loadJobs();
+    this.loadBranches();
   },
   methods: {
+    async loadBranches() {
+      try {
+        const response = await getBranches();
+        this.branches = response.data;
+      } catch (error) {
+        console.error("Failed to load branches", error);
+      }
+    },
     async loadJobs() {
       this.jobsLoading = true;
       try {
@@ -193,7 +216,7 @@ export default {
         };
         await createJob(payload);
         alert("Placement drive created successfully! Waiting for Admin approval.");
-        this.newJob = { title: '', description: '', min_cgpa: '', salary: '', deadline: '' };
+        this.newJob = { title: '', description: '', min_cgpa: '', salary: '', deadline: '', eligible_branches: [] };
         this.showCreateForm = false;
         await this.loadJobs();
       } catch (err) {
@@ -450,6 +473,34 @@ textarea {
   resize: vertical;
 }
 
+select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e0;
+  background: #fff;
+  color: #2d3748;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+select[multiple] {
+  min-height: 80px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  margin-top: 0.2rem;
+}
+
 input:focus, textarea:focus {
   outline: none;
   border-color: #4299e1;
@@ -633,6 +684,16 @@ input:focus, textarea:focus {
 .status-badge.rejected {
   background: #fed7d7;
   color: #e53e3e;
+}
+
+.status-badge.closed {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.status-badge.interview_scheduled {
+  background: #e9d8fd;
+  color: #6b46c1;
 }
 
 .loading-state, .empty-state {

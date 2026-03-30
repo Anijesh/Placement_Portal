@@ -44,7 +44,7 @@ class StudentApplyJob(Resource):
         if student.cgpa < job.min_cgpa:
             return {"message": "You do not meet the CGPA requirement"}, 400
         branch_ids = [branch.id for branch in job.eligible_branches]
-        if student.branch_id not in branch_ids:
+        if branch_ids and student.branch_id not in branch_ids:
             return {"message": "Your branch is not eligible for this drive"}, 400
         application=Application(student_id = student.id,
                                 job_id = job.id)
