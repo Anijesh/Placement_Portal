@@ -70,13 +70,13 @@ class CompanyApplicatonList(Resource):
         for application in applications:
             result.append({'application_id':application.id,
                            "job_title":application.job.title,
-                           'student':application.student.name,
-                           'branch':application.student.branch.name,
+                           'student_name':application.student.name,
+                           'student_branch':application.student.branch.name,
                            'cgpa':application.student.cgpa,
                            'skills':application.student.skills,
                            'graduation_year':str(application.student.graduation_year),
                            "status":application.status,
-                           'salary':application.job.salary,
+                           'offered_salary':application.job.salary,
                            'applied_at':str(application.applied_at),
                            'interview_date': str(application.interview_date) if application.interview_date else None,
 

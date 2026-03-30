@@ -69,7 +69,7 @@ class StudentApplicationList(Resource):
                            "job_title":application.job.title,
                            'company':application.job.company.name,
                            "status":application.status,
-                           'salary':application.job.salary,
+                           'offered_salary':application.job.salary,
                            'applied_at':str(application.applied_at),
                           })
         return result,200

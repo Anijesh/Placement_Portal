@@ -58,7 +58,7 @@
               <div class="job-details">
                 <span><strong>Application ID:</strong> {{ app.application_id }}</span>
                 <span><strong>Job ID:</strong> {{ app.job_id }}</span>
-                <span><strong>Salary:</strong> {{ app.salary }}</span>
+                <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
                 <span><strong>Status:</strong> <span :class="['status-badge', app.status.toLowerCase()]">{{ app.status }}</span></span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
               </div>
@@ -375,7 +375,12 @@ export default {
   color: #3182ce;
 }
 
-.status-badge.accepted, .status-badge.selected, .status-badge.approved {
+.status-badge.interview_scheduled {
+  background: #e9d8fd;
+  color: #6b46c1;
+}
+
+.status-badge.selected, .status-badge.approved {
   background: #c6f6d5;
   color: #38a169;
 }
@@ -383,6 +388,11 @@ export default {
 .status-badge.rejected {
   background: #fed7d7;
   color: #e53e3e;
+}
+
+.status-badge.closed {
+  background: #e2e8f0;
+  color: #4a5568;
 }
 
 .loading-state, .empty-state {

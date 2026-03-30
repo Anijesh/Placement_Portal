@@ -103,19 +103,19 @@
         <div v-else class="card-list">
           <div v-for="app in applications" :key="app.application_id" class="card">
             <div class="card-header">
-              <h4 class="company-name">{{ app.student }}</h4>
+              <h4 class="company-name">{{ app.student_name }}</h4>
               <span :class="['status-badge', app.status?.toLowerCase() || 'applied']">{{ app.status || 'applied' }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
                 <span><strong>Job Title:</strong> {{ app.job_title }}</span>
-                <span><strong>Offered Salary:</strong> {{ app.salary }}</span>
-                <span><strong>Branch:</strong> {{ app.branch }}</span>
+                <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
+                <span><strong>Branch:</strong> {{ app.student_branch }}</span>
                 <span><strong>CGPA:</strong> {{ app.cgpa }}</span>
-                <span><strong>Grad Year:</strong> {{ app.graduation_year }}</span>
+                <span><strong>Graduation Year:</strong> {{ app.graduation_year }}</span>
                 <span><strong>Skills:</strong> {{ app.skills }}</span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
-                <span v-if="app.interview_date"><strong>Interview:</strong> {{ formatDate(app.interview_date) }}</span>
+                <span v-if="app.interview_date"><strong>Interview Date:</strong> {{ formatDate(app.interview_date) }}</span>
               </div>
             </div>
             <div class="card-footer actions">
