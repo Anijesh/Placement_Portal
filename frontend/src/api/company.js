@@ -34,3 +34,11 @@ export function rejectApplication(appId) {
 export function acceptApplication(appId) {
   return axios.put(`${API}/application/${appId}/accept`, {}, getAuthHeaders())
 }
+
+export function closeJob(jobId) {
+  return axios.put(`${API}/job/${jobId}/close`, {}, getAuthHeaders())
+}
+
+export function scheduleInterview(appId, data) {
+  return axios.put(`${API}/application/${appId}/interview`, data, getAuthHeaders())
+}

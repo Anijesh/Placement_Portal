@@ -72,6 +72,7 @@
             </div>
             <div class="card-footer actions">
               <button @click="viewApplications(job.id, job.title)" class="action-btn secondary">View Applicants</button>
+              <button v-if="job.status !== 'closed' && job.status !== 'rejected'" @click="handleCloseJob(job.id)" class="action-btn reject">Close Drive</button>
             </div>
           </div>
         </div>
@@ -99,11 +100,16 @@
                 <span><strong>Grad Year:</strong> {{ app.graduation_year }}</span>
                 <span><strong>Skills:</strong> {{ app.skills }}</span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
+                <span v-if="app.interview_date"><strong>Interview:</strong> {{ formatDateTime(app.interview_date) }}</span>
               </div>
             </div>
             <div class="card-footer actions">
+              <div v-if="app.status === 'shortlisted'" class="interview-scheduler">
+                <input v-model="interviewDates[app.application_id]" type="datetime-local" class="date-input" />
+                <button @click="handleScheduleInterview(app.application_id)" class="action-btn approve" :disabled="!interviewDates[app.application_id]">Schedule Interview</button>
+              </div>
               <button v-if="app.status === 'applied'" @click="handleShortlist(app.application_id)" class="action-btn approve">Shortlist</button>
-              <button v-if="app.status === 'shortlisted'" @click="handleAccept(app.application_id)" class="action-btn approve">Select / Hire</button>
+              <button v-if="app.status === 'interview_scheduled' || app.status === 'shortlisted'" @click="handleAccept(app.application_id)" class="action-btn approve">Select / Hire</button>
               <button v-if="app.status !== 'rejected' && app.status !== 'selected'" @click="handleReject(app.application_id)" class="action-btn reject">Reject</button>
             </div>
           </div>
@@ -121,7 +127,9 @@ import {
   fetchApplications, 
   shortlistApplication, 
   rejectApplication, 
-  acceptApplication 
+  acceptApplication,
+  closeJob,
+  scheduleInterview
 } from '../api/company';
 import { logoutAPI } from '../api/auth';
 
@@ -145,6 +153,7 @@ export default {
       selectedJobTitle: '',
       applications: [],
       applicationsLoading: false,
+      interviewDates: {},
     };
   },
   async created() {
@@ -231,6 +240,30 @@ export default {
       }
     },
 
+    async handleScheduleInterview(appId) {
+      if (!this.interviewDates[appId]) {
+        alert("Please select a date and time for the interview.");
+        return;
+      }
+      try {
+        await scheduleInterview(appId, { interview_date: this.interviewDates[appId] });
+        alert("Interview scheduled successfully.");
+        this.viewApplications(this.selectedJobId, this.selectedJobTitle);
+      } catch (err) {
+        alert("Action failed. " + (err.response?.data?.message || err.message));
+      }
+    },
+
+    async handleCloseJob(jobId) {
+      if (!confirm("Are you sure you want to close this placement drive? Students will no longer be able to apply.")) return;
+      try {
+        await closeJob(jobId);
+        await this.loadJobs();
+      } catch (err) {
+        alert("Action failed.");
+      }
+    },
+
     async handleReject(appId) {
       if (!confirm("Reject this candidate?")) return;
       try {
@@ -267,6 +300,11 @@ export default {
       if (!dateString) return "N/A";
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    formatDateTime(dateString) {
+      if (!dateString || dateString === 'None') return "N/A";
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateString).toLocaleString(undefined, options);
     }
   }
 };
@@ -504,6 +542,22 @@ input:focus, textarea:focus {
   background: #edf2f7;
   color: #4a5568;
   padding: 0.4rem 0.8rem;
+}
+
+.interview-scheduler {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.date-input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  font-size: 0.85rem;
 }
 
 .submit-btn {
