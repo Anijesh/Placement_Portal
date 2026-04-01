@@ -52,6 +52,9 @@ class CompanyJobList(Resource):
                 "deadline" : str(job.deadline),
                 "salary" : job.salary,
                 "status" : job.status,
+                "eligible_branches": [b.name for b in job.eligible_branches],
+                "applicant_count": Application.query.filter_by(job_id=job.id).count(),
+                "created_at": str(job.created_at),
             })
         return results,200
     

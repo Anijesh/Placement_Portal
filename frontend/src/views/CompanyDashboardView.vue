@@ -75,11 +75,13 @@
             <div class="card-body">
               <p class="description">{{ job.description }}</p>
               <div class="job-details">
+                <span><strong>Drive ID:</strong> {{ job.id }}</span>
                 <span><strong>Min CGPA:</strong> {{ job.min_cgpa }}</span>
                 <span><strong>Salary:</strong> {{ job.salary }}</span>
                 <span><strong>Deadline:</strong> {{ formatDate(job.deadline) }}</span>
                 <span><strong>Eligible Branches:</strong> {{ job.eligible_branches?.join(', ') || 'All' }}</span>
                 <span><strong>Applicants:</strong> {{ job.applicant_count || 0 }}</span>
+                <span><strong>Created At:</strong> {{ formatDate(job.created_at) }}</span>
               </div>
             </div>
             <div class="card-footer actions">
@@ -108,6 +110,7 @@
             </div>
             <div class="card-body">
               <div class="job-details">
+                <span><strong>Application ID:</strong> {{ app.application_id }}</span>
                 <span><strong>Job Title:</strong> {{ app.job_title }}</span>
                 <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
                 <span><strong>Branch:</strong> {{ app.student_branch }}</span>
