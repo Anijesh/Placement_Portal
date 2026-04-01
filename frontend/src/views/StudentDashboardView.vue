@@ -25,6 +25,7 @@
                 <span><strong>Min CGPA:</strong> {{ job.min_cgpa }}</span>
                 <span><strong>Salary:</strong> {{ job.salary }}</span>
                 <span><strong>Deadline:</strong> {{ formatDate(job.deadline) }}</span>
+                <span><strong>Eligible Branches:</strong> {{ job.eligible_branches?.join(', ') || 'All' }}</span>
               </div>
             </div>
             <div class="card-footer">
@@ -52,15 +53,16 @@
           <div v-for="app in applications" :key="app.application_id" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ app.company }}</h4>
-              <span class="job-title">{{ app.job_title }}</span>
+              <span :class="['status-badge', app.status?.toLowerCase() || 'applied']">{{ app.status || 'applied' }}</span>
             </div>
             <div class="card-body">
               <div class="job-details">
                 <span><strong>Application ID:</strong> {{ app.application_id }}</span>
                 <span><strong>Job ID:</strong> {{ app.job_id }}</span>
+                <span><strong>Job Title:</strong> {{ app.job_title }}</span>
                 <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
-                <span><strong>Status:</strong> <span :class="['status-badge', app.status.toLowerCase()]">{{ app.status }}</span></span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
+                <span v-if="app.interview_date"><strong>Interview Date:</strong> {{ formatDate(app.interview_date) }}</span>
               </div>
             </div>
           </div>
@@ -79,7 +81,7 @@
             </div>
             <div class="card-body">
               <div class="job-details">
-                <span><strong>Salary:</strong> {{ p.salary }}</span>
+                <span><strong>Offered Salary:</strong> {{ p.offered_salary }}</span>
                 <span><strong>Joining Date:</strong> {{ formatDate(p.joining_date) }}</span>
               </div>
             </div>
@@ -117,11 +119,10 @@ export default {
       this.jobsLoading = true;
       try {
         const res = await fetchJobs();
-        // Endpoint returns an array or an object with a message if none found
         if (Array.isArray(res.data)) {
           this.jobs = res.data;
         } else {
-          this.jobs = []; // "No job found"
+          this.jobs = [];
         }
       } catch (err) {
         console.error("Failed to fetch jobs:", err);
@@ -165,7 +166,7 @@ export default {
       try {
         const res = await applyJob(jobId);
         alert(res.data.message || "Application submitted successfully");
-        await this.loadApplications(); // Refresh history
+        await this.loadApplications();
       } catch (err) {
         const message = err.response?.data?.message || "Failed to apply";
         alert(`Error: ${message}`);
@@ -245,16 +246,16 @@ export default {
 .dashboard-main {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 0 2rem 2rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .dashboard-section h3 {
   font-size: 1.25rem;
   color: #2d3748;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
   font-weight: 600;
 }
 
@@ -282,6 +283,9 @@ export default {
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 

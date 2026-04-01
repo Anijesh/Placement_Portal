@@ -23,6 +23,7 @@ class StudentJobList(Resource):
                 "min_cgpa" : job.min_cgpa,
                 "deadline" : str(job.deadline),
                 "salary" : job.salary,
+                "eligible_branches": [b.name for b in job.eligible_branches],
             })
         return result,200
     
@@ -71,6 +72,7 @@ class StudentApplicationList(Resource):
                            "status":application.status,
                            'offered_salary':application.job.salary,
                            'applied_at':str(application.applied_at),
+                           'interview_date': str(application.interview_date) if application.interview_date else None,
                           })
         return result,200
 
@@ -95,7 +97,7 @@ class StudentPlacementHistory(Resource):
                 result.append({
                     "company": application.job.company.name,
                     "job_title": application.job.title,
-                    "salary": placement.offered_salary,
+                    "offered_salary": placement.offered_salary,
                     "joining_date": str(placement.joining_date)
                 })
         return result, 200
