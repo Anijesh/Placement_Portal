@@ -8,9 +8,16 @@
     </header>
 
     <main class="dashboard-main fade-in">
-      
+      <nav class="dashboard-nav">
+        <button @click="activeTab = 'overview'" :class="['nav-btn', { active: activeTab === 'overview' }]">Overview</button>
+        <button @click="activeTab = 'companies'" :class="['nav-btn', { active: activeTab === 'companies' }]">Companies</button>
+        <button @click="activeTab = 'students'" :class="['nav-btn', { active: activeTab === 'students' }]">Students</button>
+        <button @click="activeTab = 'jobs'" :class="['nav-btn', { active: activeTab === 'jobs' }]">Jobs</button>
+        <button @click="activeTab = 'applications'" :class="['nav-btn', { active: activeTab === 'applications' }]">Applications</button>
+        <button @click="activeTab = 'placements'" :class="['nav-btn', { active: activeTab === 'placements' }]">Placements</button>
+      </nav>
 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'overview'" class="dashboard-section">
         <h3>Platform Overview</h3>
         <div v-if="statsLoading" class="loading-state">Loading stats...</div>
         <div v-else class="stats-grid">
@@ -34,7 +41,7 @@
       </section>
 
 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'companies'" class="dashboard-section">
         <div class="section-header-row">
           <h3>Companies</h3>
           <div class="search-wrapper">
@@ -54,6 +61,8 @@
                 <span><strong>Name:</strong> {{ company.name }}</span>
                 <span><strong>Industry:</strong> {{ company.industry }}</span>
                 <span><strong>Location:</strong> {{ company.location }}</span>
+                <span><strong>Website:</strong> {{ company.website || 'N/A' }}</span>
+                <span><strong>HR Contact:</strong> {{ company.hr_contact || 'N/A' }}</span>
                 <span><strong>Approval Status:</strong> <span :class="['status-badge', company.status?.toLowerCase() || 'pending']">{{ company.status || 'pending' }}</span></span>
                 <span><strong>Account Status:</strong> <span :class="['status-badge', company.is_active ? 'approved' : 'rejected']">{{ company.is_active ? 'Active' : 'Inactive' }}</span></span>
               </div>
@@ -69,7 +78,7 @@
       </section>
 
 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'students'" class="dashboard-section">
         <div class="section-header-row">
           <h3>Students</h3>
           <div class="search-wrapper">
@@ -103,8 +112,7 @@
         </div>
       </section>
 
-
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'jobs'" class="dashboard-section">
         <h3>Job Postings</h3>
         <div v-if="jobsLoading" class="loading-state">Loading jobs...</div>
         <div v-else-if="jobs.length === 0" class="empty-state">No jobs posted yet.</div>
@@ -133,8 +141,7 @@
         </div>
       </section>
 
- 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'applications'" class="dashboard-section">
         <h3>Applications</h3>
         <div v-if="applicationsLoading" class="loading-state">Loading applications...</div>
         <div v-else-if="applications.length === 0" class="empty-state">No applications submitted.</div>
@@ -158,8 +165,7 @@
         </div>
       </section>
 
-
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'placements'" class="dashboard-section">
         <h3>Placements</h3>
         <div v-if="placementsLoading" class="loading-state">Loading placements...</div>
         <div v-else-if="placements.length === 0" class="empty-state">No placements yet.</div>
@@ -199,6 +205,7 @@ import { logoutAPI } from '../api/auth';
 export default {
   data() {
     return {
+      activeTab: 'overview',
       stats: {},
       companies: [],
       students: [],
@@ -451,6 +458,38 @@ export default {
   background: #ffffff;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #718096;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.nav-btn.active {
+  background: #ebf8ff;
+  color: #3182ce;
 }
 
 .header-content {

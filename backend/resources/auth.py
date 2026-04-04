@@ -21,8 +21,9 @@ class RegisterResource(Resource):
 
         if role == 'student':
             student = Student(
-                name=data.get('name'),
                 user_id=user.id,
+                name=data.get('name'),
+                
                 branch_id=data.get('branch_id'),
                 cgpa=data.get('cgpa'),
                 graduation_year=data.get('graduation_year'),
@@ -35,6 +36,7 @@ class RegisterResource(Resource):
                 name=data.get('name'),
                 industry=data.get('industry', ''),
                 website=data.get('website', ''),
+                hr_contact=data.get('hr_contact', ''),
                 location=data.get('location')
             )
             db.session.add(company)
@@ -52,6 +54,9 @@ class LoginResource(Resource):
 
         if not user.check_password(data['password']):
             return {'message': 'Invalid credentials'}, 401
+            
+        if not user.is_active and user.role in ['student', 'company']:
+            return {'message': 'Your account is currently inactive. Please contact the administrator.'}, 403
 
         access_token = create_access_token(
             identity=str(user.id),

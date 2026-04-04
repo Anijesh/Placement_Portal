@@ -7,6 +7,7 @@ class Company(db.Model):
     name = db.Column(db.String(200),nullable = False)
     industry= db.Column(db.String(100))
     website = db.Column(db.String(255))
+    hr_contact = db.Column(db.String(100))
     approval_status = db.Column(db.String(20), default="pending")
     location = db.Column(db.String(50),nullable=False)
 

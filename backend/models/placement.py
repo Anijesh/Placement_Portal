@@ -7,7 +7,7 @@ class Placement(db.Model):
     application_id = db.Column(
         db.Integer, db.ForeignKey("applications.id"), nullable=False, unique=True
     )
-    offered_salary = db.Column(db.Float)
+    offered_salary = db.Column(db.String(100))
     joining_date = db.Column(db.Date)
 
     application = db.relationship("Application", backref=db.backref("placement", uselist=False))

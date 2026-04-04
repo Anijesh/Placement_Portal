@@ -8,7 +8,55 @@
     </header>
 
     <main class="dashboard-main fade-in">
-      <section class="dashboard-section">
+      <nav class="dashboard-nav">
+        <button @click="activeTab = 'profile'" :class="['nav-btn', { active: activeTab === 'profile' }]">My Profile</button>
+        <button @click="activeTab = 'jobs'" :class="['nav-btn', { active: activeTab === 'jobs' }]">Available Jobs</button>
+        <button @click="activeTab = 'applications'" :class="['nav-btn', { active: activeTab === 'applications' }]">My Applications</button>
+        <button @click="activeTab = 'placements'" :class="['nav-btn', { active: activeTab === 'placements' }]">Placement History</button>
+      </nav>
+
+      <section v-if="activeTab === 'profile'" class="dashboard-section">
+        <h3>My Profile</h3>
+        <div v-if="profileLoading" class="loading-state">Loading profile...</div>
+        <div v-else class="card form-card">
+          <form @submit.prevent="handleUpdateProfile" class="profile-form">
+            <div class="row-group">
+              <div class="input-group">
+                <label>Full Name</label>
+                <input v-model="profile.name" type="text" required />
+              </div>
+              <div class="input-group">
+                <label>Branch</label>
+                <select v-model="profile.branch_id" required>
+                  <option v-for="branch in branches" :key="branch.id" :value="branch.id">{{ branch.name }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row-group">
+              <div class="input-group">
+                <label>CGPA</label>
+                <input v-model="profile.cgpa" type="number" step="0.01" min="0" max="10" />
+              </div>
+              <div class="input-group">
+                <label>Graduation Year</label>
+                <input v-model="profile.graduation_year" type="number" min="2000" max="2100" />
+              </div>
+            </div>
+            <div class="input-group full-width">
+              <label>Skills</label>
+              <textarea v-model="profile.skills" rows="3" placeholder="E.g., Python, Vue, Database Management"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="submit-btn" :disabled="isUpdatingProfile">
+                <span v-if="isUpdatingProfile" class="spinner"></span>
+                <span v-else>Update Profile</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section v-if="activeTab === 'jobs'" class="dashboard-section">
         <h3>Available Jobs</h3>
         <div v-if="jobsLoading" class="loading-state">Loading jobs...</div>
         <div v-else-if="jobs.length === 0" class="empty-state">No jobs available right now.</div>
@@ -45,7 +93,7 @@
         </div>
       </section>
 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'applications'" class="dashboard-section">
         <h3>My Applications</h3>
         <div v-if="historyLoading" class="loading-state">Loading applications...</div>
         <div v-else-if="applications.length === 0" class="empty-state">You haven't applied to any jobs yet.</div>
@@ -63,13 +111,14 @@
                 <span><strong>Offered Salary:</strong> {{ app.offered_salary }}</span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
                 <span v-if="app.interview_date"><strong>Interview Date:</strong> {{ formatDate(app.interview_date) }}</span>
+                <span v-if="app.feedback"><strong>Feedback:</strong> {{ app.feedback }}</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'placements'" class="dashboard-section">
         <h3>Placement History</h3>
         <div v-if="placementsLoading" class="loading-state">Loading placements...</div>
         <div v-else-if="placements.length === 0" class="empty-state">No placements yet.</div>
@@ -93,15 +142,26 @@
 </template>
 
 <script>
-import { fetchJobs, applyJob, fetchApplications, fetchPlacements } from '../api/student';
-import { logoutAPI } from '../api/auth';
+import { fetchJobs, applyJob, fetchApplications, fetchPlacements, fetchProfile, updateProfile } from '../api/student';
+import { logoutAPI, getBranches } from '../api/auth';
 
 export default {
   data() {
     return {
+      activeTab: 'jobs',
+      profile: {
+        name: '',
+        branch_id: '',
+        cgpa: '',
+        graduation_year: '',
+        skills: ''
+      },
+      branches: [],
       jobs: [],
       applications: [],
       placements: [],
+      profileLoading: true,
+      isUpdatingProfile: false,
       jobsLoading: true,
       historyLoading: true,
       placementsLoading: true,
@@ -109,9 +169,46 @@ export default {
     };
   },
   async created() {
-    await Promise.all([this.loadJobs(), this.loadApplications(), this.loadPlacements()]);
+    await Promise.all([
+      this.loadProfile(),
+      this.loadBranches(),
+      this.loadJobs(), 
+      this.loadApplications(), 
+      this.loadPlacements()
+    ]);
   },
   methods: {
+    async loadProfile() {
+      this.profileLoading = true;
+      try {
+        const res = await fetchProfile();
+        this.profile = res.data;
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      } finally {
+        this.profileLoading = false;
+      }
+    },
+    async loadBranches() {
+      try {
+        const res = await getBranches();
+        this.branches = res.data;
+      } catch (err) {
+        console.error("Failed to load branches:", err);
+      }
+    },
+    async handleUpdateProfile() {
+      this.isUpdatingProfile = true;
+      try {
+        await updateProfile(this.profile);
+        alert("Profile updated successfully!");
+        this.loadProfile();
+      } catch (err) {
+        alert("Failed to update profile: " + (err.response?.data?.message || err.message));
+      } finally {
+        this.isUpdatingProfile = false;
+      }
+    },
     hasApplied(jobId) {
       return this.applications.some(app => app.job_id === jobId);
     },
@@ -209,6 +306,110 @@ export default {
   background: #ffffff;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #718096;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.nav-btn.active {
+  background: #ebf8ff;
+  color: #3182ce;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.row-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.input-group input, .input-group select, .input-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e0;
+  background: #fff;
+  color: #2d3748;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-btn {
+  padding: 0.6rem 2rem;
+  border-radius: 8px;
+  border: none;
+  background: #3182ce;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #2b6cb0;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .header-content {

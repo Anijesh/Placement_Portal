@@ -37,6 +37,8 @@ class AdminCompanyListResource(Resource):
                 "name": c.name,
                 "industry": c.industry,
                 "location": c.location,
+                "website": c.website,
+                "hr_contact": c.hr_contact,
                 "status": c.approval_status,
                 "is_active": c.user.is_active
             })
@@ -208,6 +210,8 @@ class AdminSearchCompanies(Resource):
                 "name": c.name,
                 "industry": c.industry,
                 "location": c.location,
+                "website": c.website,
+                "hr_contact": c.hr_contact,
                 "status": c.approval_status,
                 "is_active": c.user.is_active
             })

@@ -11,6 +11,14 @@ const getAuthHeaders = () => {
   }
 }
 
+export function fetchProfile() {
+  return axios.get(`${API}/profile`, getAuthHeaders())
+}
+
+export function updateProfile(data) {
+  return axios.put(`${API}/profile`, data, getAuthHeaders())
+}
+
 export function createJob(jobData) {
   return axios.post(`${API}/create/job`, jobData, getAuthHeaders())
 }
@@ -23,12 +31,12 @@ export function fetchApplications(jobId) {
   return axios.get(`${API}/job/application/${jobId}/list`, getAuthHeaders())
 }
 
-export function shortlistApplication(appId) {
-  return axios.put(`${API}/application/${appId}/shortlist`, {}, getAuthHeaders())
+export function shortlistApplication(appId, feedback = "") {
+  return axios.put(`${API}/application/${appId}/shortlist`, { feedback }, getAuthHeaders())
 }
 
-export function rejectApplication(appId) {
-  return axios.put(`${API}/application/${appId}/reject`, {}, getAuthHeaders())
+export function rejectApplication(appId, feedback = "") {
+  return axios.put(`${API}/application/${appId}/reject`, { feedback }, getAuthHeaders())
 }
 
 export function acceptApplication(appId) {

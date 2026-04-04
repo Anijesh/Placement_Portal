@@ -6,6 +6,49 @@ from extensions import db
 from datetime import datetime,date
 
 
+class CompanyProfile(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+        if not company:
+            return {"message": "Company not found"}, 404
+        return {
+            "id": company.id,
+            "name": company.name,
+            "industry": company.industry,
+            "location": company.location,
+            "website": company.website,
+            "hr_contact": company.hr_contact,
+            "approval_status": company.approval_status,
+        }, 200
+
+    @jwt_required()
+    def put(self):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+        company = Company.query.filter_by(user_id=get_jwt_identity()).first()
+        if not company:
+            return {"message": "Company not found"}, 404
+        
+        data = request.get_json()
+        if 'name' in data:
+            company.name = data['name']
+        if 'industry' in data:
+            company.industry = data['industry']
+        if 'location' in data:
+            company.location = data['location']
+        if 'website' in data:
+            company.website = data['website']
+        if 'hr_contact' in data:
+            company.hr_contact = data['hr_contact']
+
+        db.session.commit()
+        return {"message": "Profile updated successfully"}, 200
+
 class CompanyCreateJob(Resource):
     @jwt_required()
     def post(self):
@@ -30,6 +73,16 @@ class CompanyCreateJob(Resource):
         )
 
         db.session.add(job)
+
+        if "eligible_branches" in data:
+            branch_ids = data["eligible_branches"]
+            branches = []
+            for branch_id in branch_ids:
+                branch = Branch.query.get(branch_id)
+                if branch:
+                    branches.append(branch)
+            job.eligible_branches = branches
+
         db.session.commit()
 
         return {"message": "Placement drive created"}, 201
@@ -97,7 +150,13 @@ class CompanyShortlistApplication(Resource):
             return {'message':"Application not found"},404
         if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
-        application.status='shortlisted'
+            
+        data = request.get_json()
+        
+        application.status = 'shortlisted'
+        if data and 'feedback' in data:
+            application.feedback = data['feedback']
+            
         db.session.commit()
         return {"message": "Student shortlisted"}, 200
 
@@ -113,7 +172,13 @@ class CompanyRejectApplication(Resource):
             return {'message':"Application not found"},404
         if application.job.company_id != company.id:
             return {"message": "Unauthorized"}, 403
-        application.status='rejected'
+            
+        data = request.get_json()
+        
+        application.status = 'rejected'
+        if data and 'feedback' in data:
+            application.feedback = data['feedback']
+            
         db.session.commit()
         return {"message": "Student application rejected "}, 200
 

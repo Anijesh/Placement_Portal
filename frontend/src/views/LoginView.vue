@@ -77,7 +77,7 @@ export default {
           this.$router.push("/student");
         }
       } catch (error) {
-        alert("Invalid login credentials");
+        alert(error.response?.data?.message || "Invalid login credentials");
       } finally {
         this.isLoading = false;
       }

@@ -8,6 +8,7 @@ class Application(db.Model):
     status = db.Column(db.String(20), default="applied")
     applied_at = db.Column(db.DateTime, default=datetime.utcnow)
     interview_date = db.Column(db.DateTime, nullable=True)
+    feedback = db.Column(db.String(500), nullable=True)
 
     __table_args__ = (
         db.UniqueConstraint("student_id", "job_id", name="unique_student_job"),

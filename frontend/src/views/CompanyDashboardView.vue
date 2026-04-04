@@ -8,9 +8,57 @@
     </header>
 
     <main class="dashboard-main fade-in">
-      
+      <nav class="dashboard-nav">
+        <button @click="activeTab = 'profile'" :class="['nav-btn', { active: activeTab === 'profile' }]">Company Profile</button>
+        <button v-if="profile.approval_status === 'approved'" @click="activeTab = 'create'" :class="['nav-btn', { active: activeTab === 'create' }]">Create Drive</button>
+        <button v-if="profile.approval_status === 'approved'" @click="activeTab = 'drives'" :class="['nav-btn', { active: activeTab === 'drives' }]">My Placement Drives</button>
+      </nav>
 
-      <section class="dashboard-section create-job-section">
+      <section v-if="activeTab === 'profile'" class="dashboard-section">
+        <h3>
+          Company Details
+          <span v-if="profile.approval_status" :class="['status-badge', profile.approval_status.toLowerCase()]" style="margin-left: 10px; font-size: 0.8rem; vertical-align: middle;">
+            {{ profile.approval_status }}
+          </span>
+        </h3>
+        <div v-if="profileLoading" class="loading-state">Loading profile...</div>
+        <div v-else class="card form-card">
+          <form @submit.prevent="handleUpdateProfile" class="profile-form">
+            <div class="row-group">
+              <div class="input-group">
+                <label>Company Name</label>
+                <input v-model="profile.name" type="text" required />
+              </div>
+              <div class="input-group">
+                <label>HR Contact</label>
+                <input v-model="profile.hr_contact" type="text" />
+              </div>
+            </div>
+            <div class="row-group">
+              <div class="input-group">
+                <label>Industry</label>
+                <input v-model="profile.industry" type="text" />
+              </div>
+              <div class="input-group">
+                <label>Location</label>
+                <input v-model="profile.location" type="text" required />
+              </div>
+            </div>
+            <div class="input-group full-width">
+              <label>Website</label>
+              <input v-model="profile.website" type="text" />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="submit-btn" :disabled="isUpdatingProfile">
+                <span v-if="isUpdatingProfile" class="spinner"></span>
+                <span v-else>Update Profile</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section v-if="activeTab === 'create'" class="dashboard-section create-job-section">
         <div class="section-header">
           <h3>Create Placement Drive</h3>
           <button @click="toggleCreateForm" class="action-btn secondary">
@@ -61,8 +109,7 @@
         </form>
       </section>
 
- 
-      <section class="dashboard-section">
+      <section v-if="activeTab === 'drives'" class="dashboard-section">
         <h3>My Placement Drives</h3>
         <div v-if="jobsLoading" class="loading-state">Loading your drives...</div>
         <div v-else-if="jobs.length === 0" class="empty-state">You haven't posted any jobs yet.</div>
@@ -93,8 +140,7 @@
         </div>
       </section>
 
-
-      <section v-if="selectedJobId !== null" class="dashboard-section applications-section slide-down" ref="applicationsSection">
+      <section v-if="activeTab === 'drives' && selectedJobId !== null" class="dashboard-section applications-section slide-down" ref="applicationsSection">
         <div class="section-header">
           <h3>Applicants for: {{ selectedJobTitle }}</h3>
           <button @click="closeApplications" class="action-btn close-btn">Close</button>
@@ -140,6 +186,8 @@
 
 <script>
 import { 
+  fetchProfile,
+  updateProfile,
   createJob, 
   fetchJobs, 
   fetchApplications, 
@@ -155,11 +203,15 @@ import { logoutAPI, getBranches } from '../api/auth';
 export default {
   data() {
     return {
+      activeTab: 'drives',
       jobs: [],
       jobsLoading: true,
       branches: [],
+      profile: {},
+      profileLoading: true,
+      isUpdatingProfile: false,
       
-      showCreateForm: false,
+      showCreateForm: true,
       isCreating: false,
       newJob: {
         title: '',
@@ -178,10 +230,34 @@ export default {
     };
   },
   async created() {
+    this.loadProfile();
     this.loadJobs();
     this.loadBranches();
   },
   methods: {
+    async loadProfile() {
+      this.profileLoading = true;
+      try {
+        const res = await fetchProfile();
+        this.profile = res.data;
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      } finally {
+        this.profileLoading = false;
+      }
+    },
+    async handleUpdateProfile() {
+      this.isUpdatingProfile = true;
+      try {
+        await updateProfile(this.profile);
+        alert("Company profile updated successfully!");
+        this.loadProfile();
+      } catch (err) {
+        alert("Failed to update profile: " + (err.response?.data?.message || err.message));
+      } finally {
+        this.isUpdatingProfile = false;
+      }
+    },
     async loadBranches() {
       try {
         const response = await getBranches();
@@ -261,9 +337,10 @@ export default {
     },
 
     async handleShortlist(appId) {
-      if (!confirm("Shortlist this candidate?")) return;
+      const feedback = prompt("Please provide feedback for shortlisting this candidate (optional):", "");
+      if (feedback === null) return;
       try {
-        await shortlistApplication(appId);
+        await shortlistApplication(appId, feedback);
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
         alert("Action failed.");
@@ -308,9 +385,10 @@ export default {
     },
 
     async handleReject(appId) {
-      if (!confirm("Reject this candidate?")) return;
+      const feedback = prompt("Please provide feedback for rejecting this candidate (required):", "");
+      if (feedback === null) return;
       try {
-        await rejectApplication(appId);
+        await rejectApplication(appId, feedback);
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
         alert("Action failed.");
@@ -368,6 +446,38 @@ export default {
   background: #ffffff;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #718096;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.nav-btn.active {
+  background: #ebf8ff;
+  color: #3182ce;
 }
 
 .header-content {

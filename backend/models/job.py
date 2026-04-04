@@ -17,7 +17,7 @@ class Job(db.Model):
     description = db.Column(db.Text)
     min_cgpa = db.Column(db.Float, nullable=False)
     deadline = db.Column(db.Date, nullable=False)
-    salary = db.Column(db.Float)
+    salary = db.Column(db.String(100))
     status = db.Column(db.String(20), default="pending")  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

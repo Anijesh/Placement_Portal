@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from resources.company import(
+    CompanyProfile,
     CompanyCreateJob,
     CompanyJobList,
     CompanyApplicatonList,
@@ -15,6 +16,7 @@ from resources.company import(
 company_bp=Blueprint('company_bp',__name__)
 api=Api(company_bp)
 
+api.add_resource(CompanyProfile,'/profile')
 api.add_resource(CompanyCreateJob,'/create/job')
 api.add_resource(CompanyJobList,'/job/list')
 api.add_resource(CompanyApplicatonList,'/job/application/<int:id>/list')

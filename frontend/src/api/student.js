@@ -11,6 +11,14 @@ const getAuthHeaders = () => {
   }
 }
 
+export function fetchProfile() {
+  return axios.get(`${API}/profile`, getAuthHeaders())
+}
+
+export function updateProfile(data) {
+  return axios.put(`${API}/profile`, data, getAuthHeaders())
+}
+
 export function fetchJobs() {
   return axios.get(`${API}/jobs/list`, getAuthHeaders())
 }

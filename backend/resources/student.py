@@ -4,6 +4,49 @@ from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import Student, Company, Job,User,Application
 from extensions import db
 
+class StudentProfile(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'student':
+            return {"message": "Student access required"}, 403
+        student = Student.query.filter_by(user_id=get_jwt_identity()).first()
+        if not student:
+            return {"message": "Student not found"}, 404
+        return {
+            "id": student.id,
+            "name": student.name,
+            "branch_id": student.branch_id,
+            "branch": student.branch.name if student.branch else None,
+            "cgpa": student.cgpa,
+            "graduation_year": student.graduation_year,
+            "skills": student.skills
+        }, 200
+
+    @jwt_required()
+    def put(self):
+        claims = get_jwt()
+        if claims.get('role') != 'student':
+            return {"message": "Student access required"}, 403
+        student = Student.query.filter_by(user_id=get_jwt_identity()).first()
+        if not student:
+            return {"message": "Student not found"}, 404
+        
+        data = request.get_json()
+        if 'name' in data:
+            student.name = data['name']
+        if 'branch_id' in data:
+            student.branch_id = data['branch_id']
+        if 'cgpa' in data:
+            student.cgpa = float(data['cgpa']) if data['cgpa'] else None
+        if 'graduation_year' in data:
+            student.graduation_year = int(data['graduation_year']) if data['graduation_year'] else None
+        if 'skills' in data:
+            student.skills = data['skills']
+            
+        db.session.commit()
+        return {"message": "Profile updated successfully"}, 200
+
 class StudentJobList(Resource):
     @jwt_required()
     def get(self):
@@ -73,6 +116,7 @@ class StudentApplicationList(Resource):
                            'offered_salary':application.job.salary,
                            'applied_at':str(application.applied_at),
                            'interview_date': str(application.interview_date) if application.interview_date else None,
+                           'feedback': application.feedback
                           })
         return result,200
 

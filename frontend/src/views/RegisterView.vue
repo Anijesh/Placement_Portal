@@ -76,9 +76,16 @@
             </div>
           </div>
 
-          <div class="input-group">
-            <label>Website</label>
-            <input v-model="form.website" type="url" placeholder="https://example.com" />
+          <div class="row-group">
+            <div class="input-group">
+              <label>Website</label>
+              <input v-model="form.website" type="url" placeholder="https://example.com" />
+            </div>
+
+            <div class="input-group">
+              <label>HR Contact</label>
+              <input v-model="form.hr_contact" type="text" placeholder="HR Phone" />
+            </div>
           </div>
         </div>
 
@@ -108,6 +115,7 @@ export default {
         password: "",
         role: "student",
         // Student specific
+        name:"",
         branch_id: "",
         cgpa: "",
         graduation_year: "",
@@ -116,7 +124,8 @@ export default {
         name: "",
         industry: "",
         location: "",
-        website: ""
+        website: "",
+        hr_contact: ""
       }
     };
   },
@@ -139,6 +148,7 @@ export default {
         };
 
         if (this.form.role === 'student') {
+          payload.name = this.form.name;
           payload.branch_id = this.form.branch_id;
           payload.cgpa = parseFloat(this.form.cgpa);
           payload.graduation_year = parseInt(this.form.graduation_year);
@@ -148,6 +158,7 @@ export default {
           payload.industry = this.form.industry;
           payload.location = this.form.location;
           payload.website = this.form.website;
+          payload.hr_contact = this.form.hr_contact;
         }
 
         await register(payload);
