@@ -171,6 +171,8 @@
                 <span><strong>CGPA:</strong> {{ app.cgpa }}</span>
                 <span><strong>Graduation Year:</strong> {{ app.graduation_year }}</span>
                 <span><strong>Skills:</strong> {{ app.skills }}</span>
+                <span v-if="app.experience"><strong>Experience:</strong> {{ app.experience }}</span>
+                <span v-if="app.resume_link"><strong>Resume:</strong> <a :href="app.resume_link" target="_blank" rel="noopener noreferrer">View Resume</a></span>
                 <span><strong>Applied On:</strong> {{ formatDate(app.applied_at) }}</span>
                 <span v-if="app.interview_date"><strong>Interview Date:</strong> {{ formatDate(app.interview_date) }}</span>
               </div>

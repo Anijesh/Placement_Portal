@@ -130,6 +130,8 @@ class CompanyApplicatonList(Resource):
                            'student_branch':application.student.branch.name,
                            'cgpa':application.student.cgpa,
                            'skills':application.student.skills,
+                           'experience': application.student.experience,
+                           'resume_link': application.student.resume_link,
                            'graduation_year':str(application.student.graduation_year),
                            "status":application.status,
                            'offered_salary':application.job.salary,
