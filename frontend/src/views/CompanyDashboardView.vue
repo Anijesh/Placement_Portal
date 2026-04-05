@@ -10,8 +10,8 @@
     <main class="dashboard-main fade-in">
       <nav class="dashboard-nav">
         <button @click="activeTab = 'profile'" :class="['nav-btn', { active: activeTab === 'profile' }]">Company Profile</button>
-        <button v-if="profile.approval_status === 'approved'" @click="activeTab = 'create'" :class="['nav-btn', { active: activeTab === 'create' }]">Create Drive</button>
-        <button v-if="profile.approval_status === 'approved'" @click="activeTab = 'drives'" :class="['nav-btn', { active: activeTab === 'drives' }]">My Placement Drives</button>
+        <button @click="activeTab = 'create'" :class="['nav-btn', { active: activeTab === 'create' }]">Create Drive</button>
+        <button @click="activeTab = 'drives'" :class="['nav-btn', { active: activeTab === 'drives' }]">My Placement Drives</button>
       </nav>
 
       <section v-if="activeTab === 'profile'" class="dashboard-section">
@@ -59,8 +59,11 @@
       </section>
 
       <section v-if="activeTab === 'create'" class="dashboard-section create-job-section">
-        <div class="section-header">
-          <h3>Create Placement Drive</h3>
+        <div v-if="profile.approval_status === 'pending'" class="loading-state" style="background: transparent;">waiting for approval in pending satus</div>
+        <div v-else-if="profile.approval_status === 'rejected'" class="empty-state">Your Placement Drive Status is rejected contact admin</div>
+        <div v-else>
+          <div class="section-header">
+            <h3>Create Placement Drive</h3>
           <button @click="toggleCreateForm" class="action-btn secondary">
             {{ showCreateForm ? 'Cancel' : 'Add New Drive' }}
           </button>
@@ -101,17 +104,21 @@
             </select>
             <span class="hint">Hold Ctrl/Cmd to select multiple. Leave empty for all branches.</span>
           </div>
-          
+
           <button type="submit" class="submit-btn" :disabled="isCreating">
             <span v-if="isCreating" class="spinner"></span>
             <span v-else>Submit Drive</span>
           </button>
         </form>
+        </div>
       </section>
 
-      <section v-if="activeTab === 'drives'" class="dashboard-section">
-        <h3>My Placement Drives</h3>
-        <div v-if="jobsLoading" class="loading-state">Loading your drives...</div>
+      <section v-if="activeTab === 'drives' && selectedJobId === null" class="dashboard-section">
+        <div v-if="profile.approval_status === 'pending'" class="loading-state" style="background: transparent;">waiting for approval in pending satus</div>
+        <div v-else-if="profile.approval_status === 'rejected'" class="empty-state">Your Placement Drive Status is rejected contact admin</div>
+        <div v-else>
+          <h3>My Placement Drives</h3>
+          <div v-if="jobsLoading" class="loading-state">Loading drives...</div>
         <div v-else-if="jobs.length === 0" class="empty-state">You haven't posted any jobs yet.</div>
         <div v-else class="card-list">
           <div v-for="job in jobs" :key="job.id" class="card job-card">
@@ -137,6 +144,7 @@
               <button v-if="job.status === 'closed'" @click="handleReopenJob(job.id)" class="action-btn approve">Reopen Drive</button>
             </div>
           </div>
+        </div>
         </div>
       </section>
 

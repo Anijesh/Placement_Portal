@@ -42,9 +42,19 @@
                 <input v-model="profile.graduation_year" type="number" min="2000" max="2100" />
               </div>
             </div>
+            <div class="row-group">
+              <div class="input-group">
+                <label>Skills</label>
+                <textarea v-model="profile.skills" rows="3" placeholder="E.g., Python, Vue, Database Management"></textarea>
+              </div>
+              <div class="input-group">
+                <label>Experience</label>
+                <textarea v-model="profile.experience" rows="3" placeholder="Previous internships, jobs, etc."></textarea>
+              </div>
+            </div>
             <div class="input-group full-width">
-              <label>Skills</label>
-              <textarea v-model="profile.skills" rows="3" placeholder="E.g., Python, Vue, Database Management"></textarea>
+              <label>Resume Link</label>
+              <input v-model="profile.resume_link" type="url" placeholder="https://link-to-your-resume.com" />
             </div>
             <div class="form-actions">
               <button type="submit" class="submit-btn" :disabled="isUpdatingProfile">
@@ -57,11 +67,16 @@
       </section>
 
       <section v-if="activeTab === 'jobs'" class="dashboard-section">
-        <h3>Available Jobs</h3>
+        <div class="section-header">
+          <h3>Available Jobs</h3>
+          <div class="search-bar">
+            <input v-model="searchQuery" type="text" placeholder="Search by title, company, or skills..." class="search-input" />
+          </div>
+        </div>
         <div v-if="jobsLoading" class="loading-state">Loading jobs...</div>
-        <div v-else-if="jobs.length === 0" class="empty-state">No jobs available right now.</div>
+        <div v-else-if="filteredJobs.length === 0" class="empty-state">No jobs match your search criteria or none available.</div>
         <div v-else class="card-list">
-          <div v-for="job in jobs" :key="job.id" class="card">
+          <div v-for="job in filteredJobs" :key="job.id" class="card">
             <div class="card-header">
               <h4 class="company-name">{{ job.company }}</h4>
               <span class="job-title">{{ job.title }}</span>
@@ -134,6 +149,11 @@
                 <span><strong>Joining Date:</strong> {{ formatDate(p.joining_date) }}</span>
               </div>
             </div>
+            <div class="card-footer" style="padding: 10px 15px; border-top: 1px solid #e1e8ed; text-align: right;">
+              <button @click="downloadOfferLetter(p)" class="action-btn" style="background-color: #28a745; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                Download Offer Letter
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -154,10 +174,13 @@ export default {
         branch_id: '',
         cgpa: '',
         graduation_year: '',
-        skills: ''
+        skills: '',
+        experience: '',
+        resume_link: ''
       },
       branches: [],
       jobs: [],
+      searchQuery: '',
       applications: [],
       placements: [],
       profileLoading: true,
@@ -176,6 +199,19 @@ export default {
       this.loadApplications(), 
       this.loadPlacements()
     ]);
+  },
+  computed: {
+    filteredJobs() {
+      if (!this.searchQuery) return this.jobs;
+      const lowerQuery = this.searchQuery.toLowerCase();
+      return this.jobs.filter(job => {
+        return (
+          (job.title && job.title.toLowerCase().includes(lowerQuery)) ||
+          (job.company && job.company.toLowerCase().includes(lowerQuery)) ||
+          (job.description && job.description.toLowerCase().includes(lowerQuery))
+        );
+      });
+    }
   },
   methods: {
     async loadProfile() {
@@ -256,6 +292,16 @@ export default {
       } finally {
         this.placementsLoading = false;
       }
+    },
+    downloadOfferLetter(placement) {
+      const text = `OFFICIAL PLACEMENT CONFIRMATION\n\nCompany: ${placement.company}\nTitle: ${placement.job_title}\nOffered Salary: ${placement.offered_salary}\nJoining Date: ${placement.joining_date}\n\nCongratulations on your selection!`;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Offer_Letter_${placement.company}.txt`;
+      a.click();
+      window.URL.revokeObjectURL(url);
     },
     async handleApply(jobId) {
       if (!confirm("Are you sure you want to apply for this job?")) return;
