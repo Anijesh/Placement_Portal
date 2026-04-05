@@ -37,10 +37,14 @@
         </button>
       </form>
 
-      <p class="register-link">
-        Don't have an account?
-        <router-link to="/register">Register here</router-link>
-      </p>
+      <div class="register-options">
+        <p>Don't have an account?</p>
+        <div class="register-links">
+          <router-link :to="{ path: '/register', query: { role: 'student' } }" class="reg-link">Register as Student</router-link>
+          <span class="divider">|</span>
+          <router-link :to="{ path: '/register', query: { role: 'company' } }" class="reg-link">Register as Company</router-link>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -205,22 +209,39 @@ input:focus {
 }
 
 
-.register-link {
+.register-options {
   text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: #718096;
+  margin-top: 1.8rem;
 }
 
-.register-link a {
+.register-options p {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 0.6rem;
+}
+
+.register-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.reg-link {
   color: #3182ce;
   text-decoration: none;
   font-weight: 600;
-  margin-left: 0.4rem;
+  transition: color 0.2s;
 }
 
-.register-link a:hover {
+.reg-link:hover {
+  color: #2b6cb0;
   text-decoration: underline;
+}
+
+.divider {
+  color: #cbd5e0;
 }
 
 

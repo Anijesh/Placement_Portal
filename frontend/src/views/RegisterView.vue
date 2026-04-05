@@ -17,12 +17,20 @@
           <input v-model="form.password" type="password" placeholder="Create a password" required />
         </div>
 
-        <div class="input-group">
+        <div class="role-selection" v-if="!hasRoleQuery">
           <label>Register As</label>
-          <select v-model="form.role">
-            <option value="student">Student</option>
-            <option value="company">Company</option>
-          </select>
+          <div class="role-buttons">
+            <button type="button" 
+                    :class="['role-btn', { active: form.role === 'student' }]" 
+                    @click="form.role = 'student'">
+              Student
+            </button>
+            <button type="button" 
+                    :class="['role-btn', { active: form.role === 'company' }]" 
+                    @click="form.role = 'company'">
+              Company
+            </button>
+          </div>
         </div>
 
         <div v-if="form.role === 'student'" class="dynamic-fields slide-down">
@@ -126,10 +134,16 @@ export default {
         location: "",
         website: "",
         hr_contact: ""
-      }
+      },
+      hasRoleQuery: false
     };
   },
   async mounted() {
+    if (this.$route.query.role && ['student', 'company'].includes(this.$route.query.role)) {
+      this.form.role = this.$route.query.role;
+      this.hasRoleQuery = true;
+    }
+    
     try {
       const response = await getBranches();
       this.branches = response.data;
@@ -255,6 +269,41 @@ input, select, textarea {
   font-size: 1rem;
   transition: border-color 0.2s;
   box-sizing: border-box;
+}
+
+.role-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.role-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: white;
+  color: #4a5568;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.role-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
 }
 
 input::placeholder, textarea::placeholder {
