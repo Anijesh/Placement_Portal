@@ -67,10 +67,10 @@
       </section>
 
       <section v-if="activeTab === 'jobs'" class="dashboard-section">
-        <div class="section-header">
-          <h3>Available Jobs</h3>
-          <div class="search-bar">
-            <input v-model="searchQuery" type="text" placeholder="Search by title, company, or skills..." class="search-input" />
+        <div class="section-header-horizontal" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0;">Available Jobs</h3>
+          <div class="search-bar" style="width: 100%; max-width: 300px;">
+            <input v-model="searchQuery" type="text" placeholder="Search by title, company, or skills..." class="search-input" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e0; border-radius: 6px;" />
           </div>
         </div>
         <div v-if="jobsLoading" class="loading-state">Loading jobs...</div>
