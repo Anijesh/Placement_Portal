@@ -20,7 +20,9 @@ class StudentProfile(Resource):
             "branch": student.branch.name if student.branch else None,
             "cgpa": student.cgpa,
             "graduation_year": student.graduation_year,
-            "skills": student.skills
+            "skills": student.skills,
+            "experience": student.experience,
+            "resume_link": student.resume_link
         }, 200
 
     @jwt_required()
@@ -43,6 +45,10 @@ class StudentProfile(Resource):
             student.graduation_year = int(data['graduation_year']) if data['graduation_year'] else None
         if 'skills' in data:
             student.skills = data['skills']
+        if 'experience' in data:
+            student.experience = data['experience']
+        if 'resume_link' in data:
+            student.resume_link = data['resume_link']
             
         db.session.commit()
         return {"message": "Profile updated successfully"}, 200

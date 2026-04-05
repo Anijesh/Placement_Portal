@@ -8,6 +8,8 @@ class Student(db.Model):
     cgpa= db.Column(db.Float,nullable='False')
     graduation_year= db.Column(db.Integer,nullable='False')
     skills = db.Column(db.Text)
+    experience = db.Column(db.Text, nullable = True)
+    resume_link = db.Column(db.String(255), nullable = True)
 
     user = db.relationship("User", backref=db.backref("student", uselist=False))
     branch = db.relationship("Branch", backref="students")
