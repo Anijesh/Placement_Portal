@@ -8,7 +8,7 @@ Tech Stack:
 - SQLite (Database)
 - Redis (Caching)
 - Celery (Async Jobs)
-- Bootstrap (UI Styling)
+
 
 The application supports three roles:
 - Admin
