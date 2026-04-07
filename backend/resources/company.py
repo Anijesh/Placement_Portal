@@ -202,7 +202,6 @@ class CompanyAcceptApplication(Resource):
                             joining_date=date.today())
         db.session.add(placement)
         db.session.commit()
-
         return {"message": "Student selected successfully"}, 200
 
 class CompanyCloseJob(Resource):
