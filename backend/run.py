@@ -22,7 +22,7 @@ def create_admin():
         print("Admin already exists")
 
 def create_branch():
-    default_branches = ['CSE','ECE','EEE','MECH','CIVIL',]
+    default_branches = ['CSE','ECE','EEE','MECH','CIVIL','AIML',"IT","Bio Tech"]
     for branch_name in default_branches:
         existing_branch = Branch.query.filter_by(name=branch_name).first()
         if not existing_branch:
