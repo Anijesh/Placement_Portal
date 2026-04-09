@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import Student, Company, Job,User,Application
-from extensions import db
+from extensions import db, cache
 
 class StudentProfile(Resource):
     @jwt_required()
@@ -51,10 +51,12 @@ class StudentProfile(Resource):
             student.resume_link = data['resume_link']
             
         db.session.commit()
+        cache.clear()
         return {"message": "Profile updated successfully"}, 200
 
 class StudentJobList(Resource):
     @jwt_required()
+    @cache.cached(timeout=60)
     def get(self):
         claims=get_jwt()
         if claims.get('role') != 'student':
@@ -100,6 +102,7 @@ class StudentApplyJob(Resource):
                                 job_id = job.id)
         db.session.add(application)
         db.session.commit()
+        cache.clear()
         return {"message":"Application submitted successfully"},201
         
 class StudentApplicationList(Resource):

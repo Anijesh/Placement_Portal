@@ -2,10 +2,11 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt
 from models import Student, Company, Job,User ,Application,Placement
-from extensions import db
+from extensions import db, cache
 
 class AdminStatsResource(Resource):
     @jwt_required()
+    @cache.cached(timeout=60)
     def get(self):
         claims = get_jwt()
         if claims.get("role") != "admin":
@@ -57,6 +58,7 @@ class AdminCompanyApproveResource(Resource):
 
         company.approval_status = "approved"
         db.session.commit()
+        cache.clear()
         return {"message": "Company approved"}, 200
 
 class AdminCompanyRejectResource(Resource):
@@ -72,6 +74,7 @@ class AdminCompanyRejectResource(Resource):
 
         company.approval_status = "rejected"
         db.session.commit()
+        cache.clear()
         return {"message": "Company rejected"}, 200
     
 class AdminStudentListResource(Resource):
@@ -107,6 +110,7 @@ class AdminDeactivateStudent(Resource):
         user = User.query.get(student.user_id)
         user.is_active = False
         db.session.commit()
+        cache.clear()
         return {"message": "Student deactivated"}, 200
     
 class AdminDeactivateCompany(Resource):
@@ -121,7 +125,8 @@ class AdminDeactivateCompany(Resource):
         user=User.query.get(company.user.id)
         user.is_active = False
         db.session.commit()
-        return{"message":"Company deactivated"}
+        cache.clear()
+        return{"message":"Company deactivated"}, 200
     
 class AdminActivateStudent(Resource):
     @jwt_required()
@@ -135,7 +140,8 @@ class AdminActivateStudent(Resource):
         user = User.query.get(student.user_id)
         user.is_active =True
         db.session.commit()
-        return {"message": "Student activated"}
+        cache.clear()
+        return {"message": "Student activated"},200
     
 class AdminActivateCompany(Resource):
     @jwt_required()
@@ -149,11 +155,13 @@ class AdminActivateCompany(Resource):
         user=User.query.get(company.user.id)
         user.is_active = True
         db.session.commit()
-        return{"message":"Company activated"}
+        cache.clear()
+        return{"message":"Company activated"},200
     
 
 class AdminSearchStudents(Resource):
     @jwt_required()
+    @cache.cached(timeout=60, query_string=True)
     def get(self):
         claims = get_jwt()
         if claims.get('role') !='admin':
@@ -191,6 +199,7 @@ class AdminSearchStudents(Resource):
     
 class AdminSearchCompanies(Resource):
     @jwt_required()
+    @cache.cached(timeout=60, query_string=True)
     def get(self):
         claims=get_jwt()
         if claims.get('role') != 'admin':
@@ -220,6 +229,7 @@ class AdminSearchCompanies(Resource):
 
 class AdminJobList(Resource):
     @jwt_required()
+    @cache.cached(timeout=60)
     def get(self):
         claims=get_jwt()
         if claims.get('role') != 'admin':
@@ -250,6 +260,7 @@ class AdminJobApprove(Resource):
             return{"message": "job not found"},404
         job.status="approved"
         db.session.commit()
+        cache.clear()
         return {"message": "Placement drive approved"}, 200
         
 
@@ -264,6 +275,7 @@ class AdminJobReject(Resource):
             return{"message": 'job not found'},404   
         job.status ='rejected'
         db.session.commit()
+        cache.clear()
         return{'message':"placement drive rejected"},200
 
 
@@ -293,7 +305,7 @@ class AdminPlacementList(Resource):
     def get(self):
         claims = get_jwt()
         if claims.get('role') != 'admin':
-            return {"message": "admin access rrquired"},403
+            return {"message": "admin access required"},403
         placements=Placement.query.all()
         result =[]
         for placement in placements:

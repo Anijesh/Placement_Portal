@@ -1,6 +1,6 @@
 from flask import Flask
 from config import Config
-from extensions import db, jwt, cors,migrate
+from extensions import db, jwt, cors, migrate, cache
 from routes.auth_bp import auth_bp
 from routes.branch_bp import branch_bp
 from routes.admin_bp import admin_bp
@@ -16,6 +16,7 @@ def create_app():
     jwt.init_app(app)
     cors.init_app(app)
     migrate.init_app(app, db)
+    cache.init_app(app)
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(branch_bp, url_prefix="/api")

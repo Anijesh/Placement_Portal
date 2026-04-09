@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import User, Student, Company, Job, Application, Placement, Branch
-from extensions import db
+from extensions import db,cache
 from datetime import datetime,date
 
 
@@ -47,6 +47,7 @@ class CompanyProfile(Resource):
             company.hr_contact = data['hr_contact']
 
         db.session.commit()
+        cache.clear()
         return {"message": "Profile updated successfully"}, 200
 
 class CompanyCreateJob(Resource):
@@ -84,6 +85,7 @@ class CompanyCreateJob(Resource):
             job.eligible_branches = branches
 
         db.session.commit()
+        cache.clear()
 
         return {"message": "Placement drive created"}, 201
 
@@ -160,6 +162,7 @@ class CompanyShortlistApplication(Resource):
             application.feedback = data['feedback']
             
         db.session.commit()
+        cache.clear()
         return {"message": "Student shortlisted"}, 200
 
 class CompanyRejectApplication(Resource):
@@ -182,6 +185,7 @@ class CompanyRejectApplication(Resource):
             application.feedback = data['feedback']
             
         db.session.commit()
+        cache.clear()
         return {"message": "Student application rejected "}, 200
 
 class CompanyAcceptApplication(Resource):
@@ -202,6 +206,7 @@ class CompanyAcceptApplication(Resource):
                             joining_date=date.today())
         db.session.add(placement)
         db.session.commit()
+        cache.clear()
         return {"message": "Student selected successfully"}, 200
 
 class CompanyCloseJob(Resource):
@@ -218,6 +223,7 @@ class CompanyCloseJob(Resource):
             return {"message": "Unauthorized"}, 403
         job.status = 'closed'
         db.session.commit()
+        cache.clear()
         return {"message": "Placement drive closed successfully"}, 200
 
 class CompanyReopenJob(Resource):
@@ -234,6 +240,7 @@ class CompanyReopenJob(Resource):
             return {"message": "Unauthorized"}, 403
         job.status = 'approved'
         db.session.commit()
+        cache.clear()
         return {"message": "Placement drive reopened successfully"}, 200
 
 class CompanyScheduleInterview(Resource):
@@ -261,6 +268,7 @@ class CompanyScheduleInterview(Resource):
             application.status = 'interview_scheduled'
 
             db.session.commit()
+            cache.clear()
 
             return {"message": "Interview scheduled successfully"}, 200
 
