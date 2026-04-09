@@ -1,6 +1,7 @@
 alembic==1.16.5
 amqp==5.3.1
 aniso8601==10.0.1
+async-timeout==5.0.1
 billiard==4.2.4
 blinker==1.9.0
 celery==5.6.3
@@ -30,6 +31,7 @@ PyJWT==2.11.0
 pytest==8.4.2
 python-dateutil==2.9.0.post0
 pytz==2025.2
+redis==6.4.0
 six==1.17.0
 SQLAlchemy==2.0.47
 tomli==2.4.0
