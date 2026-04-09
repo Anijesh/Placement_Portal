@@ -117,7 +117,13 @@
         <div v-if="profile.approval_status === 'pending'" class="loading-state" style="background: transparent;">waiting for approval in pending satus</div>
         <div v-else-if="profile.approval_status === 'rejected'" class="empty-state">Your Placement Drive Status is rejected contact admin</div>
         <div v-else>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h3>My Placement Drives</h3>
+          <button @click="triggerCSVExport" :disabled="exportingCSV" class="action-btn" style="background-color: #2c3e50; color: white;">
+              <span v-if="exportingCSV">Processing...</span>
+              <span v-else>Export to CSV</span>
+          </button>
+        </div>
           <div v-if="jobsLoading" class="loading-state">Loading drives...</div>
         <div v-else-if="jobs.length === 0" class="empty-state">You haven't posted any jobs yet.</div>
         <div v-else class="card-list">
@@ -206,7 +212,8 @@ import {
   acceptApplication,
   closeJob,
   reopenJob,
-  scheduleInterview
+  scheduleInterview,
+  exportCSV
 } from '../api/company';
 import { logoutAPI, getBranches } from '../api/auth';
 
@@ -237,6 +244,7 @@ export default {
       applications: [],
       applicationsLoading: false,
       interviewDates: {},
+      exportingCSV: false
     };
   },
   async created() {
@@ -266,6 +274,17 @@ export default {
         alert("Failed to update profile: " + (err.response?.data?.message || err.message));
       } finally {
         this.isUpdatingProfile = false;
+      }
+    },
+    async triggerCSVExport() {
+      this.exportingCSV = true;
+      try {
+        const res = await exportCSV();
+        alert(res.data.message || "Export started. You'll receive an email shortly.");
+      } catch (err) {
+        alert("Failed to start export: " + (err.response?.data?.message || err.message));
+      } finally {
+        this.exportingCSV = false;
       }
     },
     async loadBranches() {

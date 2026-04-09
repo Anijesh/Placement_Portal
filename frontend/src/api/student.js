@@ -34,3 +34,7 @@ export function fetchApplications() {
 export function fetchPlacements() {
   return axios.get(`${API}/placements`, getAuthHeaders())
 }
+
+export function exportCSV() {
+  return axios.get(`${API}/export/csv`, getAuthHeaders())
+}

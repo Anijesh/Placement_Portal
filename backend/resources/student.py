@@ -1,8 +1,39 @@
-from flask import request 
+from flask import request, send_from_directory, current_app
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import Student, Company, Job,User,Application
 from extensions import db, cache
+import os
+
+class StudentDownloadCSV(Resource):
+    @jwt_required()
+    def get(self, filename):
+        claims = get_jwt()
+        if claims.get('role') != 'student':
+            return {"message": "Student access required"}, 403
+            
+        static_dir = 'static/exports'
+        file_path = f"{static_dir}/{filename}"
+        
+        if not os.path.exists(file_path):
+            return {"message": "File not found or still processing"}, 404
+            
+        return send_from_directory(static_dir, filename, as_attachment=True)
+
+class StudentExportCSV(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'student':
+            return {"message": "Student access required"}, 403
+            
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        from tasks import export_applications_csv
+        task = export_applications_csv.delay(user_id=user_id, role='student', email_to_notify=user.email)
+        
+        return {"message": "Export started. You will receive an email alert when it is complete.", "task_id": task.id}, 202
 
 class StudentProfile(Resource):
     @jwt_required()

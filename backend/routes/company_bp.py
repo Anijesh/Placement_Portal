@@ -11,6 +11,8 @@ from resources.company import(
     CompanyCloseJob,
     CompanyReopenJob,
     CompanyScheduleInterview,
+    CompanyExportCSV,
+    CompanyDownloadCSV
 )
 
 company_bp=Blueprint('company_bp',__name__)
@@ -26,3 +28,5 @@ api.add_resource(CompanyAcceptApplication,'/application/<int:id>/accept')
 api.add_resource(CompanyCloseJob,'/job/<int:id>/close')
 api.add_resource(CompanyReopenJob,'/job/<int:id>/reopen')
 api.add_resource(CompanyScheduleInterview,'/application/<int:id>/interview')
+api.add_resource(CompanyExportCSV, '/export/csv')
+api.add_resource(CompanyDownloadCSV, '/download/<string:filename>')

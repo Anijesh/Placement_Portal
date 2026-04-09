@@ -54,3 +54,7 @@ export function reopenJob(jobId) {
 export function scheduleInterview(appId, data) {
   return axios.put(`${API}/application/${appId}/interview`, data, getAuthHeaders())
 }
+
+export function exportCSV() {
+  return axios.get(`${API}/export/csv`, getAuthHeaders())
+}

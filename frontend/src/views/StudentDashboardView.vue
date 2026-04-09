@@ -109,7 +109,13 @@
       </section>
 
       <section v-if="activeTab === 'applications'" class="dashboard-section">
-        <h3>My Applications</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>My Applications</h3>
+            <button @click="triggerCSVExport" :disabled="exportingCSV" class="action-btn" style="background-color: #2c3e50; color: white;">
+                <span v-if="exportingCSV">Processing...</span>
+                <span v-else>Export to CSV</span>
+            </button>
+        </div>
         <div v-if="historyLoading" class="loading-state">Loading applications...</div>
         <div v-else-if="applications.length === 0" class="empty-state">You haven't applied to any jobs yet.</div>
         <div v-else class="card-list">
@@ -162,7 +168,7 @@
 </template>
 
 <script>
-import { fetchJobs, applyJob, fetchApplications, fetchPlacements, fetchProfile, updateProfile } from '../api/student';
+import { fetchJobs, applyJob, fetchApplications, fetchPlacements, fetchProfile, updateProfile, exportCSV } from '../api/student';
 import { logoutAPI, getBranches } from '../api/auth';
 
 export default {
@@ -188,7 +194,8 @@ export default {
       jobsLoading: true,
       historyLoading: true,
       placementsLoading: true,
-      applyingId: null
+      applyingId: null,
+      exportingCSV: false
     };
   },
   async created() {
@@ -243,6 +250,17 @@ export default {
         alert("Failed to update profile: " + (err.response?.data?.message || err.message));
       } finally {
         this.isUpdatingProfile = false;
+      }
+    },
+    async triggerCSVExport() {
+      this.exportingCSV = true;
+      try {
+        const res = await exportCSV();
+        alert(res.data.message || "Export started. You'll receive an email shortly.");
+      } catch (err) {
+        alert("Failed to start export: " + (err.response?.data?.message || err.message));
+      } finally {
+        this.exportingCSV = false;
       }
     },
     hasApplied(jobId) {

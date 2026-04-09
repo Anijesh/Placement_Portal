@@ -1,9 +1,43 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, send_from_directory, current_app
 from flask_jwt_extended import jwt_required, get_jwt,get_jwt_identity
 from models import User, Student, Company, Job, Application, Placement, Branch
 from extensions import db,cache
 from datetime import datetime,date
+import os
+
+
+class CompanyDownloadCSV(Resource):
+    @jwt_required()
+    def get(self, filename):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+            
+        static_dir = 'static/exports'
+        file_path = f"{static_dir}/{filename}"
+        
+        if not os.path.exists(file_path):
+            return {"message": "File not found or still processing"}, 404
+            
+        return send_from_directory(static_dir, filename, as_attachment=True)
+
+
+class CompanyExportCSV(Resource):
+    @jwt_required()
+    def get(self):
+        claims = get_jwt()
+        if claims.get('role') != 'company':
+            return {"message": "Company access required"}, 403
+            
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        
+        from tasks import export_applications_csv
+        task = export_applications_csv.delay(user_id=user_id, role='company', email_to_notify=user.email)
+        
+        return {"message": "Export started. You will receive an email alert with your file.", "task_id": task.id}, 202
 
 
 class CompanyProfile(Resource):
