@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 instance/
 *.sqlite3
+celerybeat-schedule.db
 
 # Virtual env
 venv/
