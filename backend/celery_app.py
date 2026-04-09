@@ -17,11 +17,11 @@ celery.conf.update(
     beat_schedule={
         'daily-interview-reminders': {
             'task': 'tasks.send_daily_reminders',
-            'schedule': crontab(hour=2, minute=21), 
+            'schedule': crontab(hour=9, minute=0), 
         },
         'monthly-placement-reports': {
             'task': 'tasks.generate_monthly_report',
-            'schedule': crontab(day_of_month='10', hour=2, minute=22), 
+            'schedule': crontab(day_of_month='1', hour=10, minute=0), 
         }
     }
 )
