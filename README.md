@@ -153,6 +153,7 @@ redis-cli monitor
 ### Terminal 3 — Start MailHog (SMTP Server)
 ```bash
 mailhog
+** ~/go/bin/MailHog**
 ```
 Access email inbox at: http://localhost:8025
 
