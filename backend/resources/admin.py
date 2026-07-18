@@ -284,8 +284,8 @@ class AdminApplicationList(Resource):
     def get(self):
         claims = get_jwt()
         if claims.get('role') != 'admin':
-            return {'message': 'admin access required'}
-        
+            return {'message': 'admin access required'}, 403
+
         applications= Application.query.all()
         result=[]
         for application in applications:

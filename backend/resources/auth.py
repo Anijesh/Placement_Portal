@@ -42,7 +42,7 @@ class RegisterResource(Resource):
             db.session.add(company)
 
         db.session.commit()
-        return {'message':"registration successfully"}
+        return {'message':"registration successfully"}, 201
     
 class LoginResource(Resource):
     def post(self):

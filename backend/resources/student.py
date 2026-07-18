@@ -95,7 +95,7 @@ class StudentJobList(Resource):
         jobs=Job.query.filter_by(status='approved').all()
         result =[]
         if not jobs:
-            return {"message":"No job found"}
+            return {"message":"No job found"}, 404
         for job in jobs:
             result.append({
                 "id":job.id,
