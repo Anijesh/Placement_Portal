@@ -89,7 +89,7 @@ class CompanyCreateJob(Resource):
     def post(self):
         claims = get_jwt()
         if claims.get("role") != 'company':
-            return {"message": "Company access required"}
+            return {"message": "Company access required"}, 403
         company = Company.query.filter_by(user_id=get_jwt_identity()).first()
         if not company:
             return {"message": "Company not found"}, 404
@@ -128,7 +128,7 @@ class CompanyJobList(Resource):
     def get(self):
         claims = get_jwt()
         if claims.get('role') != 'company':
-            return { "message":"Company access required"}
+            return { "message":"Company access required"}, 403
         company = Company.query.filter_by(user_id = get_jwt_identity()).first()
         jobs = Job.query.filter_by(company_id = company.id).all()
         results =[]
