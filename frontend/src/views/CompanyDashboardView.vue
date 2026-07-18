@@ -268,10 +268,10 @@ export default {
       this.isUpdatingProfile = true;
       try {
         await updateProfile(this.profile);
-        alert("Company profile updated successfully!");
+        this.$toast.success("Company profile updated successfully!");
         this.loadProfile();
       } catch (err) {
-        alert("Failed to update profile: " + (err.response?.data?.message || err.message));
+        this.$toast.error("Failed to update profile: " + (err.response?.data?.message || err.message));
       } finally {
         this.isUpdatingProfile = false;
       }
@@ -280,9 +280,9 @@ export default {
       this.exportingCSV = true;
       try {
         const res = await exportCSV();
-        alert(res.data.message || "Export started. You'll receive an email shortly.");
+        this.$toast.success(res.data.message || "Export started. You'll receive an email shortly.");
       } catch (err) {
-        alert("Failed to start export: " + (err.response?.data?.message || err.message));
+        this.$toast.error("Failed to start export: " + (err.response?.data?.message || err.message));
       } finally {
         this.exportingCSV = false;
       }
@@ -323,12 +323,12 @@ export default {
           min_cgpa: parseFloat(this.newJob.min_cgpa)
         };
         await createJob(payload);
-        alert("Placement drive created successfully! Waiting for Admin approval.");
+        this.$toast.success("Placement drive created successfully! Waiting for Admin approval.");
         this.newJob = { title: '', description: '', min_cgpa: '', salary: '', deadline: '', eligible_branches: [] };
         this.showCreateForm = false;
         await this.loadJobs();
       } catch (err) {
-        alert(err.response?.data?.message || "Failed to create placement drive");
+        this.$toast.error(err.response?.data?.message || "Failed to create placement drive");
       } finally {
         this.isCreating = false;
       }
@@ -353,7 +353,7 @@ export default {
           }
         });
       } catch (err) {
-        alert("Failed to fetch applications");
+        this.$toast.error("Failed to fetch applications");
       } finally {
         this.applicationsLoading = false;
       }
@@ -372,13 +372,13 @@ export default {
         await shortlistApplication(appId, feedback);
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
     async handleScheduleInterview(appId) {
       if (!this.interviewDates[appId]) {
-        alert("Please select a date for the interview.");
+        this.$toast.info("Please select a date for the interview.");
         return;
       }
       try {
@@ -386,30 +386,30 @@ export default {
           interview_date: this.interviewDates[appId] 
         };
         await scheduleInterview(appId, payload);
-        alert("Interview scheduled successfully.");
+        this.$toast.success("Interview scheduled successfully.");
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
-        alert("Action failed. " + (err.response?.data?.message || err.message));
+        this.$toast.error("Action failed. " + (err.response?.data?.message || err.message));
       }
     },
 
     async handleCloseJob(jobId) {
-      if (!confirm("Are you sure you want to close this placement drive? Students will no longer be able to apply.")) return;
+      if (!(await this.$toast.confirm("Are you sure you want to close this placement drive? Students will no longer be able to apply.", { confirmText: "Close Drive" }))) return;
       try {
         await closeJob(jobId);
         await this.loadJobs();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
     async handleReopenJob(jobId) {
-      if (!confirm("Are you sure you want to reopen this placement drive?")) return;
+      if (!(await this.$toast.confirm("Are you sure you want to reopen this placement drive?", { confirmText: "Reopen" }))) return;
       try {
         await reopenJob(jobId);
         await this.loadJobs();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
@@ -420,17 +420,17 @@ export default {
         await rejectApplication(appId, feedback);
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
     async handleAccept(appId) {
-      if (!confirm("Confirm selection/hiring of this candidate?")) return;
+      if (!(await this.$toast.confirm("Confirm selection/hiring of this candidate?", { confirmText: "Select / Hire" }))) return;
       try {
         await acceptApplication(appId);
         this.viewApplications(this.selectedJobId, this.selectedJobTitle);
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 

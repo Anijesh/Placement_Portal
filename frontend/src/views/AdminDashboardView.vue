@@ -343,83 +343,83 @@ export default {
     
   
     async handleApproveCompany(id) {
-      if (!confirm("Approve this company?")) return;
+      if (!(await this.$toast.confirm("Approve this company?", { confirmText: "Approve" }))) return;
       try {
         await approveCompany(id);
         this.loadCompanies();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
     async handleRejectCompany(id) {
-      if (!confirm("Reject this company?")) return;
+      if (!(await this.$toast.confirm("Reject this company?", { confirmText: "Reject" }))) return;
       try {
         await rejectCompany(id);
         this.loadCompanies();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
     async handleActivateCompany(id) {
-      if (!confirm("Activate this company account?")) return;
+      if (!(await this.$toast.confirm("Activate this company account?", { confirmText: "Activate" }))) return;
       try {
         await activateCompany(id);
-        alert("Company Activated");
+        this.$toast.success("Company Activated");
         this.loadCompanies();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
     async handleDeactivateCompany(id) {
-      if (!confirm("Deactivate this company account?")) return;
+      if (!(await this.$toast.confirm("Deactivate this company account?", { confirmText: "Deactivate" }))) return;
       try {
         await deactivateCompany(id);
-        alert("Company Deactivated");
+        this.$toast.success("Company Deactivated");
         this.loadCompanies();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
 
     async handleActivateStudent(id) {
-      if (!confirm("Activate this student account?")) return;
+      if (!(await this.$toast.confirm("Activate this student account?", { confirmText: "Activate" }))) return;
       try {
         await activateStudent(id);
-        alert("Student Activated");
+        this.$toast.success("Student Activated");
         this.loadStudents();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
     async handleDeactivateStudent(id) {
-      if (!confirm("Deactivate this student account?")) return;
+      if (!(await this.$toast.confirm("Deactivate this student account?", { confirmText: "Deactivate" }))) return;
       try {
         await deactivateStudent(id);
-        alert("Student Deactivated");
+        this.$toast.success("Student Deactivated");
         this.loadStudents();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
 
     async handleApproveJob(id) {
-      if (!confirm("Approve this job posting?")) return;
+      if (!(await this.$toast.confirm("Approve this job posting?", { confirmText: "Approve" }))) return;
       try {
         await approveJob(id);
         this.loadJobs();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
     async handleRejectJob(id) {
-      if (!confirm("Reject this job posting?")) return;
+      if (!(await this.$toast.confirm("Reject this job posting?", { confirmText: "Reject" }))) return;
       try {
         await rejectJob(id);
         this.loadJobs();
       } catch (err) {
-        alert("Action failed.");
+        this.$toast.error("Action failed.");
       }
     },
 
