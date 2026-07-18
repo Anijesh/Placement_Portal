@@ -244,10 +244,10 @@ export default {
       this.isUpdatingProfile = true;
       try {
         await updateProfile(this.profile);
-        alert("Profile updated successfully!");
+        this.$toast.success("Profile updated successfully!");
         this.loadProfile();
       } catch (err) {
-        alert("Failed to update profile: " + (err.response?.data?.message || err.message));
+        this.$toast.error("Failed to update profile: " + (err.response?.data?.message || err.message));
       } finally {
         this.isUpdatingProfile = false;
       }
@@ -256,9 +256,9 @@ export default {
       this.exportingCSV = true;
       try {
         const res = await exportCSV();
-        alert(res.data.message || "Export started. You'll receive an email shortly.");
+        this.$toast.success(res.data.message || "Export started. You'll receive an email shortly.");
       } catch (err) {
-        alert("Failed to start export: " + (err.response?.data?.message || err.message));
+        this.$toast.error("Failed to start export: " + (err.response?.data?.message || err.message));
       } finally {
         this.exportingCSV = false;
       }
@@ -322,15 +322,15 @@ export default {
       window.URL.revokeObjectURL(url);
     },
     async handleApply(jobId) {
-      if (!confirm("Are you sure you want to apply for this job?")) return;
+      if (!(await this.$toast.confirm("Are you sure you want to apply for this job?", { confirmText: "Apply" }))) return;
       this.applyingId = jobId;
       try {
         const res = await applyJob(jobId);
-        alert(res.data.message || "Application submitted successfully");
+        this.$toast.success(res.data.message || "Application submitted successfully");
         await this.loadApplications();
       } catch (err) {
         const message = err.response?.data?.message || "Failed to apply";
-        alert(`Error: ${message}`);
+        this.$toast.error(`Error: ${message}`);
       } finally {
         this.applyingId = null;
       }

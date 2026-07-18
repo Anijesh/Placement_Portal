@@ -176,10 +176,10 @@ export default {
         }
 
         await register(payload);
-        alert("Registration successful");
+        this.$toast.success("Registration successful");
         this.$router.push("/");
       } catch (error) {
-        alert(error.response?.data?.message || "Registration failed");
+        this.$toast.error(error.response?.data?.message || "Registration failed");
       } finally {
         this.isLoading = false;
       }

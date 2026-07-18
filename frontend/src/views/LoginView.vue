@@ -81,7 +81,7 @@ export default {
           this.$router.push("/student");
         }
       } catch (error) {
-        alert(error.response?.data?.message || "Invalid login credentials");
+        this.$toast.error(error.response?.data?.message || "Invalid login credentials");
       } finally {
         this.isLoading = false;
       }
